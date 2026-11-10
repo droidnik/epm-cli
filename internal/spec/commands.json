@@ -1,0 +1,4761 @@
+{
+ "title": "BeyondTrust PM Cloud Management API - Version 3",
+ "version": "v3",
+ "resources": [
+  {
+   "name": "about",
+   "tag": "About",
+   "commands": [
+    {
+     "verb": "show",
+     "method": "GET",
+     "path": "/v3/About",
+     "summary": "Retrieve version",
+     "tag": "About",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "AboutModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "accepted-domains",
+   "tag": "AcceptedDomains",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/AcceptedDomains",
+     "summary": "Retrieves list of Accepted Domains",
+     "tag": "AcceptedDomains",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "AcceptedDomainListItemModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "create",
+     "method": "POST",
+     "path": "/v3/AcceptedDomains",
+     "summary": "Creates Accepted Domain",
+     "tag": "AcceptedDomains",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "CreateAcceptedDomainRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "domainName",
+        "flag": "domain-name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Accepted Domain Name"
+       }
+      ],
+      "template": {
+       "domainName": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/AcceptedDomains/{id}",
+     "summary": "Retrieves Record of Accepted Domain",
+     "tag": "AcceptedDomains",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "AcceptedDomainDetailModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "update",
+     "method": "PUT",
+     "path": "/v3/AcceptedDomains/{id}",
+     "summary": "Modifies Accepted Domain",
+     "tag": "AcceptedDomains",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ModifyAcceptedDomainRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "domain",
+        "flag": "domain",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Accepted Domain Name"
+       },
+       {
+        "name": "domainName",
+        "flag": "domain-name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Accepted Domain Name Either DomainName or Domain required to update Accepted Domain"
+       }
+      ],
+      "template": {
+       "domain": "",
+       "domainName": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "delete",
+     "method": "DELETE",
+     "path": "/v3/AcceptedDomains/{id}",
+     "summary": "Deletes Accepted Domain",
+     "tag": "AcceptedDomains",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    }
+   ]
+  },
+  {
+   "name": "activity-audits",
+   "tag": "ActivityAudits",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/ActivityAudits",
+     "summary": "Retrieves list of Activity Audits with pagination (sorting and filtering)",
+     "tag": "ActivityAudits",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.User",
+       "flag": "user",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Initiated User email or API Client identifier"
+      },
+      {
+       "name": "Filter.Details",
+       "flag": "details",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Details of activity"
+      },
+      {
+       "name": "Filter.Created.Dates",
+       "flag": "created-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.Created.SelectionMode",
+       "flag": "created-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.Entity",
+       "flag": "entity",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Name of Activity Audit entity"
+      },
+      {
+       "name": "Filter.AuditType",
+       "flag": "audit-type",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Audit Type Name"
+      },
+      {
+       "name": "Filter.ChangedBy",
+       "flag": "changed-by",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "API",
+        "Portal",
+        "ManagementRule",
+        "Pathfinder"
+       ],
+       "required": false,
+       "help": "Audit ChangedBy"
+      }
+     ],
+     "response_schema": "ActivityAuditListItemModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "details",
+     "method": "GET",
+     "path": "/v3/ActivityAudits/Details",
+     "summary": "Retrieves list of Details of Activity Audits with pagination (sorting and filtering)",
+     "tag": "ActivityAudits",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.User",
+       "flag": "user",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Initiated User email or API Client identifier"
+      },
+      {
+       "name": "Filter.Details",
+       "flag": "details",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Details of activity"
+      },
+      {
+       "name": "Filter.Created.Dates",
+       "flag": "created-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.Created.SelectionMode",
+       "flag": "created-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.Entity",
+       "flag": "entity",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Name of Activity Audit entity"
+      },
+      {
+       "name": "Filter.AuditType",
+       "flag": "audit-type",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Audit Type Name"
+      },
+      {
+       "name": "Filter.ChangedBy",
+       "flag": "changed-by",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "API",
+        "Portal",
+        "ManagementRule",
+        "Pathfinder"
+       ],
+       "required": false,
+       "help": "Audit ChangedBy"
+      }
+     ],
+     "response_schema": "ActivityAuditDetailModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/ActivityAudits/{id}",
+     "summary": "Retrieves Record of Activity Audit",
+     "tag": "ActivityAudits",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "ActivityAuditDetailModelPagedResponse",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "admin-access-requests",
+   "tag": "AdminAccessRequest",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/AdminAccessRequest",
+     "summary": "Retrieves the list of Authorization Request with pagination (sorting and filtering)",
+     "tag": "AdminAccessRequest",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.Decision",
+       "flag": "decision",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Decision Filter"
+      },
+      {
+       "name": "Filter.CreatedOn",
+       "flag": "created-on",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Created on Date Filter - Format yyyy-MM-ddTHH:mm:ssZ"
+      },
+      {
+       "name": "Filter.ActiveOnly",
+       "flag": "active-only",
+       "type": "boolean",
+       "array": false,
+       "required": false,
+       "help": "Active Only Filter"
+      },
+      {
+       "name": "Filter.ModifiedOn",
+       "flag": "modified-on",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Modify on Date Folter - Format yyyy-MM-ddTHH:mm:ssZ"
+      },
+      {
+       "name": "Filter.ComputerId",
+       "flag": "computer-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Computer Id"
+      },
+      {
+       "name": "Filter.EndpointUserId",
+       "flag": "endpoint-user-id",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Computer User Id"
+      },
+      {
+       "name": "Filter.EndpointUserName",
+       "flag": "endpoint-user-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Computer User Name"
+      }
+     ],
+     "response_schema": "AdminAccessRequestModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "create",
+     "method": "POST",
+     "path": "/v3/AdminAccessRequest",
+     "summary": "Creates an Admin Access Request on behalf of a user. Include \"decision\" and \"decisionPerformedByUser\" with valid values to create a pre-approved request; otherwise a pending request is created.",
+     "tag": "AdminAccessRequest",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ExternalAdminRequestModel",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerId",
+        "flag": "computer-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "ComputerId"
+       },
+       {
+        "name": "duration",
+        "flag": "duration",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Duration"
+       },
+       {
+        "name": "userId",
+        "flag": "user-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "UserId"
+       },
+       {
+        "name": "userName",
+        "flag": "user-name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "User Name"
+       },
+       {
+        "name": "reason",
+        "flag": "reason",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Reason"
+       },
+       {
+        "name": "systemId",
+        "flag": "system-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "System Id"
+       },
+       {
+        "name": "ticketId",
+        "flag": "ticket-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Ticket Id"
+       },
+       {
+        "name": "ticketUrl",
+        "flag": "ticket-url",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Ticket Url"
+       },
+       {
+        "name": "decision",
+        "flag": "decision",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Decision"
+       },
+       {
+        "name": "decisionPerformedByUser",
+        "flag": "decision-performed-by-user",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Decision performed by user"
+       },
+       {
+        "name": "message",
+        "flag": "message",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Message"
+       }
+      ],
+      "template": {
+       "computerId": "00000000-0000-0000-0000-000000000000",
+       "duration": "",
+       "userId": "",
+       "userName": "",
+       "reason": "",
+       "systemId": "",
+       "ticketId": "",
+       "ticketUrl": "",
+       "decision": "",
+       "decisionPerformedByUser": "",
+       "message": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "decide",
+     "method": "POST",
+     "path": "/v3/AdminAccessRequest/approval",
+     "summary": "Updates an Admin Access Request decision which can be approved or denied",
+     "tag": "AdminAccessRequest",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "AdminRequestDecisionModel",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "requestId",
+        "flag": "request-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "Request Identifier."
+       },
+       {
+        "name": "decision",
+        "flag": "decision",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Decision. Valid values are \"Approved\" and \"Denied\"."
+       },
+       {
+        "name": "duration",
+        "flag": "duration",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Duration of the JIT Admin Session in seconds."
+       },
+       {
+        "name": "decisionPerformedByUser",
+        "flag": "decision-performed-by-user",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "User that is updating the JIT Admin Request."
+       },
+       {
+        "name": "message",
+        "flag": "message",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Message from the decision maker."
+       },
+       {
+        "name": "systemId",
+        "flag": "system-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Internal id of item associated with approval."
+       },
+       {
+        "name": "ticketId",
+        "flag": "ticket-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "External id of item associated with approval."
+       },
+       {
+        "name": "ticketUrl",
+        "flag": "ticket-url",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Url of the item associated with approval."
+       }
+      ],
+      "template": {
+       "requestId": "00000000-0000-0000-0000-000000000000",
+       "decision": "",
+       "duration": "",
+       "decisionPerformedByUser": "",
+       "message": "",
+       "systemId": "",
+       "ticketId": "",
+       "ticketUrl": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/AdminAccessRequest/{requestId}",
+     "summary": "Retrieves Record of Authorization Request",
+     "tag": "AdminAccessRequest",
+     "path_params": [
+      {
+       "name": "requestId"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "AdminAccessRequestModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "api-accounts",
+   "tag": "ApiAccounts",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/ApiAccounts",
+     "summary": "Retrieves list of Api Accounts",
+     "tag": "ApiAccounts",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "ApiAccountListItemModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "api-definition",
+   "tag": "File",
+   "commands": [
+    {
+     "verb": "download",
+     "method": "GET",
+     "path": "/v3/File/download/GetYamlApiDefinitionFile",
+     "summary": "Get the API definition file in YAML format",
+     "tag": "File",
+     "path_params": [],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "app-switcher",
+   "tag": "AppSwitcher",
+   "commands": [
+    {
+     "verb": "connector",
+     "method": "POST",
+     "path": "/v3/AppSwitcher/connector",
+     "summary": "POST /v3/AppSwitcher/connector",
+     "tag": "AppSwitcher",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "AppSwitcherRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "organizationId",
+        "flag": "organization-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "organizationId"
+       }
+      ],
+      "template": {
+       "organizationId": "00000000-0000-0000-0000-000000000000",
+       "connectorList": [
+        {
+         "connectorName": "",
+         "connectorType": "",
+         "url": "",
+         "connectorId": "00000000-0000-0000-0000-000000000000",
+         "tenantId": "00000000-0000-0000-0000-000000000000"
+        }
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "authentication-provider",
+   "tag": "AuthenticationProvider",
+   "commands": [
+    {
+     "verb": "show",
+     "method": "GET",
+     "path": "/v3/AuthenticationProvider",
+     "summary": "Retrieves a detail of the configures authentication provider",
+     "tag": "AuthenticationProvider",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "AuthenticationProviderModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "authorization-request-audits",
+   "tag": "AuthorizationRequestAudits",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/AuthorizationRequestAudits",
+     "summary": "Retrieves the list of Authorization Request Audit with pagination (sorting and filtering)",
+     "tag": "AuthorizationRequestAudits",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.TicketId",
+       "flag": "ticket-id",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.User",
+       "flag": "user",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.ComputerName",
+       "flag": "computer-name",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.ProductName",
+       "flag": "product-name",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.Reason",
+       "flag": "reason",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.DecisionPerformedByUser",
+       "flag": "decision-performed-by-user",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.Decision",
+       "flag": "decision",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.TimeOfRequest.Dates",
+       "flag": "time-of-request-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.TimeOfRequest.SelectionMode",
+       "flag": "time-of-request-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.DecisionTime.Dates",
+       "flag": "decision-time-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.DecisionTime.SelectionMode",
+       "flag": "decision-time-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.StartTime.Dates",
+       "flag": "start-time-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.StartTime.SelectionMode",
+       "flag": "start-time-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.Duration",
+       "flag": "duration",
+       "type": "string",
+       "array": false,
+       "required": false
+      }
+     ],
+     "response_schema": "AuthorizationRequestAuditListItemModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/AuthorizationRequestAudits/{id}",
+     "summary": "Retrieves Record of Authorization Request Audit",
+     "tag": "AuthorizationRequestAudits",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "AuthorizationRequestAuditDetailModelPagedResponse",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "authorization-requests",
+   "tag": "AuthorizationRequest",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/AuthorizationRequest",
+     "summary": "Retrieves the list of Authorization Request with pagination (sorting and filtering)",
+     "tag": "AuthorizationRequest",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.Decision",
+       "flag": "decision",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.CreatedOn",
+       "flag": "created-on",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.ActiveOnly",
+       "flag": "active-only",
+       "type": "boolean",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "Filter.ModifiedOn",
+       "flag": "modified-on",
+       "type": "string",
+       "array": false,
+       "required": false
+      }
+     ],
+     "response_schema": "AuthorizationRequestListItemModel",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "notification",
+     "method": "POST",
+     "path": "/v3/AuthorizationRequest/notification",
+     "summary": "Handle URM ticket notifications",
+     "tag": "AuthorizationRequest",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "AuthorizationRequestNotificationModel",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "status",
+        "flag": "status",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Status"
+       },
+       {
+        "name": "decision",
+        "flag": "decision",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Decision"
+       },
+       {
+        "name": "decisionPerformedByUser",
+        "flag": "decision-performed-by-user",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Decision Performed by User"
+       },
+       {
+        "name": "duration",
+        "flag": "duration",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Duration"
+       },
+       {
+        "name": "itsmRequestId",
+        "flag": "itsm-request-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Itsm Request Id"
+       },
+       {
+        "name": "decisionTime",
+        "flag": "decision-time",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Decision Time"
+       },
+       {
+        "name": "message",
+        "flag": "message",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Message"
+       },
+       {
+        "name": "systemId",
+        "flag": "system-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "System Id"
+       },
+       {
+        "name": "ticketId",
+        "flag": "ticket-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Ticket Id"
+       },
+       {
+        "name": "ticketUrl",
+        "flag": "ticket-url",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Ticket Url"
+       }
+      ],
+      "template": {
+       "status": "",
+       "decision": "",
+       "decisionPerformedByUser": "",
+       "duration": "",
+       "itsmRequestId": "",
+       "decisionTime": "",
+       "message": "",
+       "systemId": "",
+       "ticketId": "",
+       "ticketUrl": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/AuthorizationRequest/{systemId}",
+     "summary": "Retrieves Record of Authorization Request",
+     "tag": "AuthorizationRequest",
+     "path_params": [
+      {
+       "name": "systemId"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "AuthorizationRequestDetailsModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "computers",
+   "tag": "Computers",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/Computers",
+     "summary": "Retrieves the list of Computers with pagination (sorting and filtering). Sort by Created Date, Ascending to avoid returning duplicate entries.",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.ComputerId",
+       "flag": "computer-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "The Id of the Computer(Guid format), for example - 59A00329-87AC-49EC-BC2C-9B9E26F05185"
+      },
+      {
+       "name": "Filter.Host",
+       "flag": "host",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The host name of the Computer, for example - Computer1"
+      },
+      {
+       "name": "Filter.HostType",
+       "flag": "host-type",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Undefined",
+        "MicrosoftWindows",
+        "AppleMacOS",
+        "Linux"
+       ],
+       "required": false,
+       "help": "The host type of the Computer, for example - MicrosoftWindows, Linux"
+      },
+      {
+       "name": "Filter.AgentVersion",
+       "flag": "agent-version",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The agent version of the Computer, example - 5.6.126.0"
+      },
+      {
+       "name": "Filter.AdapterVersion",
+       "flag": "adapter-version",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The adapter version of the Computer, example - 20.5.195.0"
+      },
+      {
+       "name": "Filter.PackageManagerVersion",
+       "flag": "package-manager-version",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The Package Manager version on the Computer, example - 20.5.195.0"
+      },
+      {
+       "name": "Filter.AuthorisationState",
+       "flag": "authorisation-state",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The state of the Computer, example - Authorised, Pending"
+      },
+      {
+       "name": "Filter.LastConnected.Dates",
+       "flag": "last-connected-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.LastConnected.SelectionMode",
+       "flag": "last-connected-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.PolicyRevisionStatus",
+       "flag": "policy-revision-status",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Policy Revision Status, example - AwaitingLatestPolicy"
+      },
+      {
+       "name": "Filter.PolicyId",
+       "flag": "policy-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Policy Id, example - 59A00329-87AC-49EC-BC2C-9B9E26F05185"
+      },
+      {
+       "name": "Filter.PolicyName",
+       "flag": "policy-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Policy Name (Assigned Policy to Group/Endpoint), example - Policy1"
+      },
+      {
+       "name": "Filter.HostPolicyName",
+       "flag": "host-policy-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Host Policy Name (Current Policy on Endpoint), example - Policy1"
+      },
+      {
+       "name": "Filter.GroupId",
+       "flag": "group-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Group Id, example - 59A00329-87AC-49EC-BC2C-9B9E26F05185"
+      },
+      {
+       "name": "Filter.GroupName",
+       "flag": "group-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Group Name, example - Group1"
+      },
+      {
+       "name": "Filter.OS",
+       "flag": "os",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Windows",
+        "Mac"
+       ],
+       "required": false,
+       "help": "OS Name, example - Windows"
+      },
+      {
+       "name": "Filter.Domain",
+       "flag": "domain",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Domain Name, example - BeyondTrust"
+      },
+      {
+       "name": "Filter.Created.Dates",
+       "flag": "created-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.Created.SelectionMode",
+       "flag": "created-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.DuplicateCount.Min",
+       "flag": "duplicate-count-min",
+       "type": "integer",
+       "format": "int64",
+       "array": false,
+       "required": false,
+       "help": "Min Value of CountRange, example - 1,2,3"
+      },
+      {
+       "name": "Filter.DuplicateCount.Max",
+       "flag": "duplicate-count-max",
+       "type": "integer",
+       "format": "int64",
+       "array": false,
+       "required": false,
+       "help": "Max Value of CountRange, example - 1,2,3"
+      },
+      {
+       "name": "Filter.ConnectionStatus",
+       "flag": "connection-status",
+       "type": "string",
+       "array": true,
+       "required": false,
+       "help": "ConnectionStatus"
+      },
+      {
+       "name": "Filter.DaysDisconnected",
+       "flag": "days-disconnected",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "DaysDisconnected"
+      },
+      {
+       "name": "Filter.DaysSinceArchived",
+       "flag": "days-since-archived",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "DaysSinceArchived"
+      }
+     ],
+     "response_schema": "ComputerListItemModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false,
+     "default_sort": "created:asc"
+    },
+    {
+     "verb": "delete",
+     "method": "DELETE",
+     "path": "/v3/Computers",
+     "summary": "Deletes Computers",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputersRemoveRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerIds",
+        "flag": "computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be removed (optional when allComputers is true, otherwise its required)"
+       },
+       {
+        "name": "excludedComputerIds",
+        "flag": "excluded-computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be excluded from the deletion list. excluded computers Ids will only be applicable when \"allComputers\" is set to false."
+       },
+       {
+        "name": "allComputers",
+        "flag": "all-computers",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "Flag for all Computers matching BT.Common.ManagementApi.Computer.ComputerFilterModel and ExcludedComputerIds should be removed"
+       }
+      ],
+      "template": {
+       "computerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "excludedComputerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "filter": {
+        "computerId": "00000000-0000-0000-0000-000000000000",
+        "host": "",
+        "hostType": "Undefined",
+        "agentVersion": "",
+        "adapterVersion": "",
+        "packageManagerVersion": "",
+        "authorisationState": "",
+        "lastConnected": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "policyRevisionStatus": "",
+        "policyId": "00000000-0000-0000-0000-000000000000",
+        "policyName": "",
+        "hostPolicyName": "",
+        "groupId": "00000000-0000-0000-0000-000000000000",
+        "groupName": "",
+        "os": "Windows",
+        "domain": "",
+        "created": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "duplicateCount": {
+         "min": 0,
+         "max": 0
+        },
+        "connectionStatus": [
+         ""
+        ],
+        "daysDisconnected": 0,
+        "daysSinceArchived": 0
+       },
+       "allComputers": false
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "authorise",
+     "method": "POST",
+     "path": "/v3/Computers/Authorise",
+     "summary": "Authorises Computers",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputersAuthoriseRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerIds",
+        "flag": "computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be authorized (optional when allComputers is true, otherwise its required)"
+       },
+       {
+        "name": "excludedComputerIds",
+        "flag": "excluded-computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "excluded computers Ids will only be applicable when \"allComputers\" is set to false."
+       },
+       {
+        "name": "allComputers",
+        "flag": "all-computers",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "Flag for all Computers matching BT.Common.ManagementApi.Computer.ComputerFilterModel and ExcludedComputerIds should be removed"
+       },
+       {
+        "name": "groupId",
+        "flag": "group-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "Identifier for the group Id"
+       }
+      ],
+      "template": {
+       "computerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "excludedComputerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "filter": {
+        "computerId": "00000000-0000-0000-0000-000000000000",
+        "host": "",
+        "hostType": "Undefined",
+        "agentVersion": "",
+        "adapterVersion": "",
+        "packageManagerVersion": "",
+        "authorisationState": "",
+        "lastConnected": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "policyRevisionStatus": "",
+        "policyId": "00000000-0000-0000-0000-000000000000",
+        "policyName": "",
+        "hostPolicyName": "",
+        "groupId": "00000000-0000-0000-0000-000000000000",
+        "groupName": "",
+        "os": "Windows",
+        "domain": "",
+        "created": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "duplicateCount": {
+         "min": 0,
+         "max": 0
+        },
+        "connectionStatus": [
+         ""
+        ],
+        "daysDisconnected": 0,
+        "daysSinceArchived": 0
+       },
+       "allComputers": false,
+       "groupId": "00000000-0000-0000-0000-000000000000"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "certificate-renew",
+     "method": "POST",
+     "path": "/v3/Computers/Certificate/Renew",
+     "summary": "Request to Renew Computer Certificate",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputerRenewCertificateRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerId",
+        "flag": "computer-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "computerId": "00000000-0000-0000-0000-000000000000"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "deactivate",
+     "method": "POST",
+     "path": "/v3/Computers/Deactivate",
+     "summary": "Deactivate Computer functionality no longer exists To mimic the functionailty as closely as possible, this will now archive and delete the computer.",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputersDeactivateRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerIds",
+        "flag": "computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be deactivated (optional when allComputers is true, otherwise its required)"
+       },
+       {
+        "name": "excludedComputerIds",
+        "flag": "excluded-computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "excluded computers Ids will only be applicable when \"allComputers\" is set to false."
+       },
+       {
+        "name": "allComputers",
+        "flag": "all-computers",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "Flag for all Computers matching BT.Common.ManagementApi.Computer.ComputerFilterModel and ExcludedComputerIds should be removed"
+       }
+      ],
+      "template": {
+       "computerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "excludedComputerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "filter": {
+        "computerId": "00000000-0000-0000-0000-000000000000",
+        "host": "",
+        "hostType": "Undefined",
+        "agentVersion": "",
+        "adapterVersion": "",
+        "packageManagerVersion": "",
+        "authorisationState": "",
+        "lastConnected": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "policyRevisionStatus": "",
+        "policyId": "00000000-0000-0000-0000-000000000000",
+        "policyName": "",
+        "hostPolicyName": "",
+        "groupId": "00000000-0000-0000-0000-000000000000",
+        "groupName": "",
+        "os": "Windows",
+        "domain": "",
+        "created": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "duplicateCount": {
+         "min": 0,
+         "max": 0
+        },
+        "connectionStatus": [
+         ""
+        ],
+        "daysDisconnected": 0,
+        "daysSinceArchived": 0
+       },
+       "allComputers": false
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "details-request",
+     "method": "POST",
+     "path": "/v3/Computers/Details/Request",
+     "summary": "Retrieves Computer Status Info",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputerRetrieveStatusInfoRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerId",
+        "flag": "computer-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "computerId": "00000000-0000-0000-0000-000000000000"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "logs-request",
+     "method": "POST",
+     "path": "/v3/Computers/Logs/Request",
+     "summary": "Retrieves Computer Logs",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputerRetrieveLogsRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerId",
+        "flag": "computer-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "computerId": "00000000-0000-0000-0000-000000000000"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "log-content",
+     "method": "GET",
+     "path": "/v3/Computers/Logs/{id}/Content",
+     "summary": "Downloads Computer Log",
+     "tag": "Computers",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "reject",
+     "method": "POST",
+     "path": "/v3/Computers/Reject",
+     "summary": "Rejects Computers",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputersRejectRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerIds",
+        "flag": "computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be rejected (optional when allComputers is true, otherwise its required)"
+       },
+       {
+        "name": "excludedComputerIds",
+        "flag": "excluded-computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be excluded from the rejection list excluded computers Ids will only be applicable when \"allComputers\" is set to false."
+       },
+       {
+        "name": "allComputers",
+        "flag": "all-computers",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "Flag for all Computers matching BT.Common.ManagementApi.Computer.ComputerFilterModel and ExcludedComputerIds should be removed"
+       }
+      ],
+      "template": {
+       "computerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "excludedComputerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "filter": {
+        "computerId": "00000000-0000-0000-0000-000000000000",
+        "host": "",
+        "hostType": "Undefined",
+        "agentVersion": "",
+        "adapterVersion": "",
+        "packageManagerVersion": "",
+        "authorisationState": "",
+        "lastConnected": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "policyRevisionStatus": "",
+        "policyId": "00000000-0000-0000-0000-000000000000",
+        "policyName": "",
+        "hostPolicyName": "",
+        "groupId": "00000000-0000-0000-0000-000000000000",
+        "groupName": "",
+        "os": "Windows",
+        "domain": "",
+        "created": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "duplicateCount": {
+         "min": 0,
+         "max": 0
+        },
+        "connectionStatus": [
+         ""
+        ],
+        "daysDisconnected": 0,
+        "daysSinceArchived": 0
+       },
+       "allComputers": false
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "bulk-unarchive",
+     "method": "POST",
+     "path": "/v3/Computers/Unarchive",
+     "summary": "Unarchive Computers",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputersUnarchiveRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerIds",
+        "flag": "computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be unarchived"
+       }
+      ],
+      "template": {
+       "computerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "bulk-archive",
+     "method": "POST",
+     "path": "/v3/Computers/archive",
+     "summary": "Archive Computers",
+     "tag": "Computers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ComputersArchiveRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerIds",
+        "flag": "computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "List of Computers identifiers to be archived"
+       }
+      ],
+      "template": {
+       "computerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "unarchive",
+     "method": "POST",
+     "path": "/v3/Computers/{computerId}/Unarchive",
+     "summary": "Unarchive Computer",
+     "tag": "Computers",
+     "path_params": [
+      {
+       "name": "computerId"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "archive",
+     "method": "POST",
+     "path": "/v3/Computers/{computerId}/archive",
+     "summary": "Archive Computer",
+     "tag": "Computers",
+     "path_params": [
+      {
+       "name": "computerId"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/Computers/{id}",
+     "summary": "Retrieves a detail of the Computer",
+     "tag": "Computers",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "ComputerDetailModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "command-log",
+     "method": "GET",
+     "path": "/v3/Computers/{id}/CommandLog",
+     "summary": "Gets Computer Command Logs List",
+     "tag": "Computers",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "logs",
+     "method": "GET",
+     "path": "/v3/Computers/{id}/Logs",
+     "summary": "Gets Computer Logs",
+     "tag": "Computers",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "ComputerLogModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "events",
+   "tag": "Events",
+   "commands": [
+    {
+     "verb": "from-start-date",
+     "method": "GET",
+     "path": "/v3/Events/FromStartDate",
+     "summary": "Gets the list of events by start date",
+     "tag": "Events",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "StartDate",
+       "flag": "start-date",
+       "type": "string",
+       "array": false,
+       "required": true,
+       "help": "Start Date(UTC) to search events from (Elastic Ingestion Timestamp in UTC). Example: 2022-08-12T17:34:28.694Z"
+      },
+      {
+       "name": "RecordSize",
+       "flag": "record-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "Maximum records that can be returned. Min size: 1, Max size: 1000, Example: 100"
+      }
+     ],
+     "response_schema": "EpmEcsEventResponseModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "search",
+     "method": "GET",
+     "path": "/v3/Events/search",
+     "summary": "Gets the list of events by Filters",
+     "tag": "Events",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "TimePeriod.StartDate",
+       "flag": "start-date",
+       "type": "string",
+       "array": false,
+       "required": true,
+       "help": "Start Date(UTC) to search events from (Elastic Ingestion Timestamp in UTC). Example: 2022-08-12T17:34:28.694Z"
+      },
+      {
+       "name": "TimePeriod.EndDate",
+       "flag": "end-date",
+       "type": "string",
+       "array": false,
+       "required": true,
+       "help": "End Date(UTC) to search events from (Elastic Ingestion Timestamp in UTC). Example: 2022-08-12T17:34:28.694Z"
+      },
+      {
+       "name": "ComputerGroups",
+       "flag": "computer-groups",
+       "type": "string",
+       "format": "uuid",
+       "array": true,
+       "required": false,
+       "help": "The Id of the group(Guid format)"
+      },
+      {
+       "name": "OperatingSystem",
+       "flag": "operating-system",
+       "type": "string",
+       "array": false,
+       "required": true,
+       "help": "Os name"
+      },
+      {
+       "name": "Events.EventAction",
+       "flag": "event-action",
+       "type": "string",
+       "array": true,
+       "required": false,
+       "help": "The action of the event"
+      },
+      {
+       "name": "Events.EventCode",
+       "flag": "event-code",
+       "type": "string",
+       "array": true,
+       "required": false,
+       "help": "The code of the event"
+      },
+      {
+       "name": "Events.EventType",
+       "flag": "event-type",
+       "type": "string",
+       "array": true,
+       "required": false,
+       "help": "The type of the event"
+      },
+      {
+       "name": "Application.ApplicationType",
+       "flag": "application-type",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The type of the application"
+      },
+      {
+       "name": "Computers.HostName",
+       "flag": "host-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The host name of the computer"
+      },
+      {
+       "name": "Computers.HostDomain",
+       "flag": "host-domain",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The host domain of the computer"
+      },
+      {
+       "name": "Users.UserName",
+       "flag": "user-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The name of the user"
+      },
+      {
+       "name": "Users.UserDomain",
+       "flag": "user-domain",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The domain of the user"
+      },
+      {
+       "name": "Policies.WorkstyleName",
+       "flag": "workstyle-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The workstyle of the policy"
+      },
+      {
+       "name": "Policies.ApplicationGroupName",
+       "flag": "application-group-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The application group name of the policy"
+      },
+      {
+       "name": "Policies.OnDemandRule",
+       "flag": "on-demand-rule",
+       "type": "boolean",
+       "array": false,
+       "required": false,
+       "help": "Is on demand rule?"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      }
+     ],
+     "response_schema": "EpmEcsEventResponseModel",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "global-roles",
+   "tag": "GlobalRoles",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/GlobalRoles",
+     "summary": "Retrieves the list of Global Roles with pagination, sorting and filtering.",
+     "tag": "GlobalRoles",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.Id",
+       "flag": "id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Unique Identifier"
+      },
+      {
+       "name": "Filter.Name",
+       "flag": "name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Name"
+      },
+      {
+       "name": "Filter.Description",
+       "flag": "description",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Description"
+      },
+      {
+       "name": "Filter.IsBuiltIn",
+       "flag": "is-built-in",
+       "type": "boolean",
+       "array": false,
+       "required": false,
+       "help": "true = Built-in. false = Custom. When the value is not provided the filter is not applied."
+      }
+     ],
+     "response_schema": "GlobalRoleModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/GlobalRoles/{id}",
+     "summary": "Retrieves the details of a global role.",
+     "tag": "GlobalRoles",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "GlobalRoleDetailModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "groups",
+   "tag": "Groups",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/Groups",
+     "summary": "Retrieves the list of Groups with pagination (sorting and filtering)",
+     "tag": "Groups",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.Id",
+       "flag": "id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "The Id of the group(Guid format), for example - 59A00329-87AC-49EC-BC2C-9B9E26F05185"
+      },
+      {
+       "name": "Filter.Name",
+       "flag": "name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The name of the group"
+      },
+      {
+       "name": "Filter.Description",
+       "flag": "description",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The description of the group"
+      },
+      {
+       "name": "Filter.PolicyName",
+       "flag": "policy-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The policy name of the group"
+      },
+      {
+       "name": "Filter.PolicyRevisionStatus",
+       "flag": "policy-revision-status",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "OnAssignedPolicy",
+        "AwaitingPolicyUpdate",
+        "NoPolicy"
+       ],
+       "required": false,
+       "help": "The policy revision status of the group"
+      },
+      {
+       "name": "Filter.ComputerCount",
+       "flag": "computer-count",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "Number of computers in a group"
+      },
+      {
+       "name": "Filter.ActiveComputers.Value",
+       "flag": "active-computers-value",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "Integer value for the filter, e.g. 100"
+      },
+      {
+       "name": "Filter.ActiveComputers.Operator",
+       "flag": "active-computers-operator",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "EqualTo",
+        "LessThan",
+        "GreaterThan",
+        "LessThanOrEqualTo",
+        "GreaterThanOrEqualTo"
+       ],
+       "required": false
+      },
+      {
+       "name": "Filter.Created.Dates",
+       "flag": "created-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.Created.SelectionMode",
+       "flag": "created-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.Default",
+       "flag": "default",
+       "type": "boolean",
+       "array": false,
+       "required": false
+      }
+     ],
+     "response_schema": "GroupListItemModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "create",
+     "method": "POST",
+     "path": "/v3/Groups",
+     "summary": "Creates Group",
+     "tag": "Groups",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "CreateGroupRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "name",
+        "flag": "name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "name of the group, for example - Alianse Group"
+       },
+       {
+        "name": "description",
+        "flag": "description",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "description of the group, for example - Alianse Group Description"
+       },
+       {
+        "name": "isDefault",
+        "flag": "is-default",
+        "type": "boolean",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "name": "",
+       "description": "",
+       "isDefault": false
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "update",
+     "method": "PUT",
+     "path": "/v3/Groups",
+     "summary": "Modifies Group",
+     "tag": "Groups",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ModifyGroupRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "id",
+        "flag": "id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "id of the group, for example - 59A00329-87AC-49EC-BC2C-9B9E26F05185"
+       },
+       {
+        "name": "name",
+        "flag": "name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "name of the group, for example - Alianse Group"
+       },
+       {
+        "name": "description",
+        "flag": "description",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "description of the group, for example - Alianse Group desc"
+       }
+      ],
+      "template": {
+       "id": "00000000-0000-0000-0000-000000000000",
+       "name": "",
+       "description": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "assign-policy-to-groups",
+     "method": "POST",
+     "path": "/v3/Groups/AssignPolicyToMultipleGroups",
+     "summary": "Assigns policy revision to multiple group",
+     "tag": "Groups",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "AssignPolicyRevisionToMultipleGroupsRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "groupIds",
+        "flag": "group-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false
+       },
+       {
+        "name": "policyRevisionId",
+        "flag": "policy-revision-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "groupIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "policyRevisionId": "00000000-0000-0000-0000-000000000000"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "auto-assign-policy-revision",
+     "method": "POST",
+     "path": "/v3/Groups/AutoAssignPolicyRevision",
+     "summary": "Auto assign policy revision to the group",
+     "tag": "Groups",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "AutoAssignPolicyRevisionToGroupRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "policyRevisionId",
+        "flag": "policy-revision-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "Identify Latest Policy Revision and Groups based on provided PolicyRevisionId"
+       },
+       {
+        "name": "policyId",
+        "flag": "policy-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "Identify Latest Policy Revision and Groups based on provided PolicyId"
+       }
+      ],
+      "template": {
+       "policyRevisionId": "00000000-0000-0000-0000-000000000000",
+       "policyId": "00000000-0000-0000-0000-000000000000"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "unassign-computers",
+     "method": "POST",
+     "path": "/v3/Groups/UnassignComputers",
+     "summary": "Unassigns computers from the groups",
+     "tag": "Groups",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "UnassignComputersToGroupRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "allComputers",
+        "flag": "all-computers",
+        "type": "boolean",
+        "array": false,
+        "binary": false
+       },
+       {
+        "name": "excludedComputerIds",
+        "flag": "excluded-computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "excluded computers Ids will only be applicable when \"allComputers\" is set to false."
+       },
+       {
+        "name": "selectionComputerIds",
+        "flag": "selection-computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "selection computers ids will work when \"allComputers\" : false"
+       }
+      ],
+      "template": {
+       "allComputers": false,
+       "filter": {
+        "computerId": "00000000-0000-0000-0000-000000000000",
+        "host": "",
+        "hostType": "Undefined",
+        "agentVersion": "",
+        "adapterVersion": "",
+        "packageManagerVersion": "",
+        "authorisationState": "",
+        "lastConnected": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "policyRevisionStatus": "",
+        "policyId": "00000000-0000-0000-0000-000000000000",
+        "policyName": "",
+        "hostPolicyName": "",
+        "groupId": "00000000-0000-0000-0000-000000000000",
+        "groupName": "",
+        "os": "Windows",
+        "domain": "",
+        "created": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "duplicateCount": {
+         "min": 0,
+         "max": 0
+        },
+        "connectionStatus": [
+         ""
+        ],
+        "daysDisconnected": 0,
+        "daysSinceArchived": 0
+       },
+       "excludedComputerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "selectionComputerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": true,
+     "destructive": true
+    },
+    {
+     "verb": "bulk-clear-policy",
+     "method": "POST",
+     "path": "/v3/Groups/bulkclearpolicy",
+     "summary": "Clears policy from groups",
+     "tag": "Groups",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ClearPolicyToGroupsModel",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "groupIds",
+        "flag": "group-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false
+       }
+      ],
+      "template": {
+       "groupIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/Groups/{id}",
+     "summary": "Retrieves a detail of the group",
+     "tag": "Groups",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "delete",
+     "method": "DELETE",
+     "path": "/v3/Groups/{id}",
+     "summary": "Deletes group",
+     "tag": "Groups",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "assign-computers",
+     "method": "POST",
+     "path": "/v3/Groups/{id}/AssignComputers",
+     "summary": "assigns computers to the group",
+     "tag": "Groups",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "AssignComputersToGroupRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "computerIds",
+        "flag": "computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "computer ids which will be assigned to the group"
+       },
+       {
+        "name": "excludedComputerIds",
+        "flag": "excluded-computer-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "computer ids which will not be assigned to group excluded computers Ids will only be applicable when \"allComputers\" is set to false."
+       },
+       {
+        "name": "allComputers",
+        "flag": "all-computers",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "assigns all computers to the group"
+       }
+      ],
+      "template": {
+       "computerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "excludedComputerIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "filter": {
+        "computerId": "00000000-0000-0000-0000-000000000000",
+        "host": "",
+        "hostType": "Undefined",
+        "agentVersion": "",
+        "adapterVersion": "",
+        "packageManagerVersion": "",
+        "authorisationState": "",
+        "lastConnected": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "policyRevisionStatus": "",
+        "policyId": "00000000-0000-0000-0000-000000000000",
+        "policyName": "",
+        "hostPolicyName": "",
+        "groupId": "00000000-0000-0000-0000-000000000000",
+        "groupName": "",
+        "os": "Windows",
+        "domain": "",
+        "created": {
+         "dates": [
+          "2026-01-01T00:00:00Z"
+         ],
+         "selectionMode": "Single"
+        },
+        "duplicateCount": {
+         "min": 0,
+         "max": 0
+        },
+        "connectionStatus": [
+         ""
+        ],
+        "daysDisconnected": 0,
+        "daysSinceArchived": 0
+       },
+       "allComputers": false
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "assign-computers-by-csv",
+     "method": "POST",
+     "path": "/v3/Groups/{id}/AssignComputersByCsv",
+     "summary": "assigns computers to the group by input of csv file",
+     "tag": "Groups",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "multipart",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "csvFile",
+        "flag": "csv-file",
+        "type": "string",
+        "format": "binary",
+        "array": false,
+        "binary": true
+       }
+      ],
+      "template": {
+       "csvFile": "\u003cfile\u003e"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "assign-policy-revision",
+     "method": "POST",
+     "path": "/v3/Groups/{id}/AssignPolicyRevision",
+     "summary": "Assigns policy revision to the group",
+     "tag": "Groups",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "AssignPolicyRevisionToGroupRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "policyRevisionId",
+        "flag": "policy-revision-id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "policyRevisionId": "00000000-0000-0000-0000-000000000000"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "clear-policy",
+     "method": "PATCH",
+     "path": "/v3/Groups/{id}/ClearPolicy",
+     "summary": "Clears policy from group",
+     "tag": "Groups",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "mark-as-default",
+     "method": "PATCH",
+     "path": "/v3/Groups/{id}/MarkAsDefault",
+     "summary": "Marks group as default",
+     "tag": "Groups",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "policies",
+   "tag": "Policies",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/Policies",
+     "summary": "Retrieve list of Policies with pagination (sorting and filtering)",
+     "tag": "Policies",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.Name",
+       "flag": "name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The Name of the Policy, e.g. - Policy1"
+      },
+      {
+       "name": "Filter.Size",
+       "flag": "size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The Size of the Policy in Kb, e.g. 225"
+      },
+      {
+       "name": "Filter.Revision",
+       "flag": "revision",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of revisions for the Policy, e.g. 5"
+      },
+      {
+       "name": "Filter.TotalAssignedRevisions",
+       "flag": "total-assigned-revisions",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The total number of Groups with the Policy assigned (any Revision), e.g. 10"
+      },
+      {
+       "name": "Filter.Created.Dates",
+       "flag": "created-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.Created.SelectionMode",
+       "flag": "created-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.DraftUser",
+       "flag": "draft-user",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "The 'Locked By' user, i.e. the user that created the last draft which has locked the Policy, e.g. jbloggs@email.com"
+      }
+     ],
+     "response_schema": "PolicyListItemModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "create",
+     "method": "POST",
+     "path": "/v3/Policies",
+     "summary": "Creates new policy with provided file",
+     "tag": "Policies",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "multipart",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "Name",
+        "flag": "name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Policy Name"
+       },
+       {
+        "name": "Description",
+        "flag": "description",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Policy Description"
+       },
+       {
+        "name": "PolicyFile",
+        "flag": "policy-file",
+        "type": "string",
+        "format": "binary",
+        "array": false,
+        "binary": true,
+        "help": "Policy Content File"
+       }
+      ],
+      "template": {
+       "Name": "",
+       "Description": "",
+       "PolicyFile": "\u003cfile\u003e"
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "revision-content",
+     "method": "GET",
+     "path": "/v3/Policies/PolicyRevision/{policyRevisionId}/Content",
+     "summary": "Downloads Policy Revision",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "policyRevisionId"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/Policies/{id}",
+     "summary": "Retrieves a detail of the policy",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "update",
+     "method": "PUT",
+     "path": "/v3/Policies/{id}",
+     "summary": "Request to update policy properties",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id",
+       "help": "PolicyId"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ModifyPolicyRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "name",
+        "flag": "name",
+        "type": "string",
+        "array": false,
+        "binary": false
+       },
+       {
+        "name": "description",
+        "flag": "description",
+        "type": "string",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "name": "",
+       "description": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "delete",
+     "method": "DELETE",
+     "path": "/v3/Policies/{id}",
+     "summary": "Deletes policy",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [
+      {
+       "name": "forceDelete",
+       "flag": "force-delete",
+       "type": "boolean",
+       "array": false,
+       "required": false
+      }
+     ],
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "assigned-groups",
+     "method": "GET",
+     "path": "/v3/Policies/{id}/AssignedGroups",
+     "summary": "Retrieves list of Groups that are assigned to Policy",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "PolicyGroupsListItemModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "content",
+     "method": "GET",
+     "path": "/v3/Policies/{id}/Content",
+     "summary": "Downloads Latest Policy Revision",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "discard-draft",
+     "method": "PATCH",
+     "path": "/v3/Policies/{id}/DiscardDraft",
+     "summary": "Reverts and discards policy changes",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id",
+       "help": "Policy identifier"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "revisions",
+     "method": "GET",
+     "path": "/v3/Policies/{id}/Revisions",
+     "summary": "Retrieves list of policy revisions",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "PolicyRevisionModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "upload",
+     "method": "POST",
+     "path": "/v3/Policies/{id}/Upload",
+     "summary": "Upload New Policy Revision",
+     "tag": "Policies",
+     "path_params": [
+      {
+       "name": "id",
+       "help": "Policy Id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "multipart",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "PolicyFile",
+        "flag": "policy-file",
+        "type": "string",
+        "format": "binary",
+        "array": false,
+        "binary": true,
+        "help": "Policy Content File"
+       },
+       {
+        "name": "AutoAssignToGroup",
+        "flag": "auto-assign-to-group",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "Auto Assign Policy Revision to Computer Groups"
+       }
+      ],
+      "template": {
+       "PolicyFile": "\u003cfile\u003e",
+       "AutoAssignToGroup": false
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "policy-editor",
+   "tag": "PolicyEditor",
+   "commands": [
+    {
+     "verb": "macos-applications",
+     "method": "GET",
+     "path": "/PolicyEditor/v3/Policy/{policyId}/MacOS/ApplicationGroups",
+     "summary": "Retrieves a list of applications for the specified policy, filtered by the provided application group and application criteria.",
+     "tag": "PolicyEditor",
+     "path_params": [
+      {
+       "name": "policyId",
+       "help": "The unique identifier of the policy."
+      }
+     ],
+     "query_params": [
+      {
+       "name": "Filter.ApplicationGroupName",
+       "flag": "application-group-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Filters on the application group using a StartsWith match."
+      },
+      {
+       "name": "Filter.ApplicationGroupId",
+       "flag": "application-group-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Filters on the unique identifier of the application group using an Exact match."
+      },
+      {
+       "name": "Filter.ApplicationDescription",
+       "flag": "application-description",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Filters on the application description using a StartsWith match."
+      },
+      {
+       "name": "Filter.ApplicationId",
+       "flag": "application-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Filters on the unique identifier of the application using an Exact match."
+      }
+     ],
+     "response_schema": "MacPolicyApplicationGroupModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "macos-applications-modify",
+     "method": "POST",
+     "path": "/PolicyEditor/v3/Policy/{policyId}/MacOS/ApplicationGroups/Applications",
+     "summary": "Create, delete applications within application groups in a specified policy for a MacOS Policy.",
+     "description": "To update an existing application in the policy, first use the DELETE endpoint to remove the current application, then use the CREATE endpoint to add the updated version. Supported application types for creation: bin, bund, pkg, scr, sudo, pref. To include a backslash in a string field, type \\ twice (\\\\\\\\).",
+     "tag": "PolicyEditor",
+     "path_params": [
+      {
+       "name": "policyId",
+       "help": "Policy Id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "CreateMacOSUpdateDeleteApplicationRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [],
+      "template": {
+       "applicationData": {
+        "applicationGroups": {
+         "edit": [
+          {
+           "id": "00000000-0000-0000-0000-000000000000",
+           "applications": {
+            "add": [
+             null
+            ],
+            "delete": [
+             null
+            ]
+           }
+          }
+         ]
+        }
+       }
+      }
+     },
+     "response_schema": "PolicyApplicationModified",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "windows-applications",
+     "method": "GET",
+     "path": "/PolicyEditor/v3/Policy/{policyId}/Windows/ApplicationGroups",
+     "summary": "Retrieves a list of applications for the specified policy, filtered by the provided application group and application criteria.",
+     "tag": "PolicyEditor",
+     "path_params": [
+      {
+       "name": "policyId",
+       "help": "The unique identifier of the policy."
+      }
+     ],
+     "query_params": [
+      {
+       "name": "Filter.ApplicationGroupName",
+       "flag": "application-group-name",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Filters on the application group using a StartsWith match."
+      },
+      {
+       "name": "Filter.ApplicationGroupId",
+       "flag": "application-group-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Filters on the unique identifier of the application group using an Exact match."
+      },
+      {
+       "name": "Filter.ApplicationDescription",
+       "flag": "application-description",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Filters on the application description using a StartsWith match."
+      },
+      {
+       "name": "Filter.ApplicationId",
+       "flag": "application-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Filters on the unique identifier of the application using an Exact match."
+      }
+     ],
+     "response_schema": "PolicyApplicationGroupModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "windows-applications-modify",
+     "method": "POST",
+     "path": "/PolicyEditor/v3/Policy/{policyId}/Windows/ApplicationGroups/Applications",
+     "summary": "Create, delete applications within application groups in a specified policy for a Windows policy.",
+     "description": "To update an existing application in the policy, first use the DELETE endpoint to remove the current application, then use the CREATE endpoint to add the updated version. Supported application types for creation: bat, com, cpl, exe, msc, msi, ps1, reg, rpsc, rpss, unex, wsh. Unsupported application types for creation: ocx, svc, appx, unin (will not be supported in the future), dll, cont. Unsupported Matchers are: ActiveXCodebase, MaxVersion, MinVersion, ServiceConfigure, ServiceDisplayName, ServiceName, WindowsStorePackageName, WindowsStorePublisher To include a backslash in a string field, type \\ twice (\\\\\\\\).",
+     "tag": "PolicyEditor",
+     "path_params": [
+      {
+       "name": "policyId",
+       "help": "Policy Id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "CreateUpdateDeleteApplicationRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [],
+      "template": {
+       "applicationData": {
+        "applicationGroups": {
+         "edit": [
+          {
+           "id": "00000000-0000-0000-0000-000000000000",
+           "applications": {
+            "add": [
+             null
+            ],
+            "delete": [
+             null
+            ]
+           }
+          }
+         ]
+        }
+       }
+      }
+     },
+     "response_schema": "PolicyApplicationModified",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "roles",
+   "tag": "Roles",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/Roles",
+     "summary": "Retrieve list of Roles",
+     "tag": "Roles",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "RoleListItemModel",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/Roles/{id}",
+     "summary": "Retrieve role details",
+     "tag": "Roles",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "RoleModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "scim-resource-types",
+   "tag": "ScimResourceTypes",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/scim/v3/ResourceTypes",
+     "summary": "gets types of resources available",
+     "tag": "ScimResourceTypes",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "ScimResourceResponseScimListResponse",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "role",
+     "method": "GET",
+     "path": "/scim/v3/ResourceTypes/Role",
+     "summary": "gets roles configuration",
+     "tag": "ScimResourceTypes",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "ScimResourceResponse",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "user",
+     "method": "GET",
+     "path": "/scim/v3/ResourceTypes/User",
+     "summary": "gets user endpoint configurations",
+     "tag": "ScimResourceTypes",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "ScimResourceResponse",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "scim-roles",
+   "tag": "ScimRoles",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/scim/v3/Roles",
+     "summary": "GET /scim/v3/Roles",
+     "tag": "ScimRoles",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "filter",
+       "flag": "filter",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "startIndex",
+       "flag": "start-index",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "count",
+       "flag": "count",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false
+      }
+     ],
+     "response_schema": "ScimUserRoleScimListResponse",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "scim-schemas",
+   "tag": "ScimSchemas",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/scim/v3/Schemas",
+     "summary": "Get the Schema supported by the SCIM Api",
+     "tag": "ScimSchemas",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "ScimSchemaResponseScimListResponse",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "scim-service-provider-config",
+   "tag": "ScimServiceProviderConfig",
+   "commands": [
+    {
+     "verb": "show",
+     "method": "GET",
+     "path": "/scim/v3/ServiceProviderConfig",
+     "summary": "gets the Json structure available",
+     "tag": "ScimServiceProviderConfig",
+     "path_params": [],
+     "query_params": [],
+     "response_schema": "ScimServiceProviderConfigResponse",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "scim-users",
+   "tag": "ScimUsers",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/scim/v3/users",
+     "summary": "List V3",
+     "tag": "ScimUsers",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "filter",
+       "flag": "filter",
+       "type": "string",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "startIndex",
+       "flag": "start-index",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false
+      },
+      {
+       "name": "count",
+       "flag": "count",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false
+      }
+     ],
+     "response_schema": "ScimUserModelV3ScimListResponse",
+     "paged": false,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "create",
+     "method": "POST",
+     "path": "/scim/v3/users",
+     "summary": "Create the user using SCIM protocol",
+     "tag": "ScimUsers",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ScimUserModelV3",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "schemas",
+        "flag": "schemas",
+        "type": "string",
+        "array": true,
+        "binary": false,
+        "help": "Schemas"
+       },
+       {
+        "name": "id",
+        "flag": "id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "Id"
+       },
+       {
+        "name": "userName",
+        "flag": "user-name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "User Name"
+       },
+       {
+        "name": "displayName",
+        "flag": "display-name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Display Name"
+       },
+       {
+        "name": "locale",
+        "flag": "locale",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Locale"
+       },
+       {
+        "name": "timezone",
+        "flag": "timezone",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Time Zone"
+       },
+       {
+        "name": "externalId",
+        "flag": "external-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "External Id"
+       },
+       {
+        "name": "dateTimeFormat",
+        "flag": "date-time-format",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "DateTime Format"
+       },
+       {
+        "name": "groups",
+        "flag": "groups",
+        "type": "string",
+        "array": true,
+        "binary": false,
+        "help": "Groups"
+       },
+       {
+        "name": "password",
+        "flag": "password",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Passwords"
+       },
+       {
+        "name": "active",
+        "flag": "active",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "boolean flag of whether or not a user is active"
+       }
+      ],
+      "template": {
+       "schemas": [
+        ""
+       ],
+       "id": "00000000-0000-0000-0000-000000000000",
+       "userName": "",
+       "name": {
+        "givenName": "",
+        "familyName": "",
+        "middleName": ""
+       },
+       "emails": [
+        {
+         "primary": false,
+         "value": "",
+         "type": ""
+        }
+       ],
+       "displayName": "",
+       "locale": "",
+       "timezone": "",
+       "externalId": "",
+       "dateTimeFormat": "",
+       "groups": [
+        ""
+       ],
+       "password": "",
+       "active": false,
+       "roles": [
+        {
+         "primary": false,
+         "value": "",
+         "display": ""
+        }
+       ],
+       "entitlements": [
+        {
+         "primary": false,
+         "value": "",
+         "display": ""
+        }
+       ],
+       "meta": {
+        "resourceType": "",
+        "created": "2026-01-01T00:00:00Z"
+       }
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/scim/v3/users/{userID}",
+     "summary": "Get User V3",
+     "tag": "ScimUsers",
+     "path_params": [
+      {
+       "name": "userID"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "ScimUserModelV3",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "update",
+     "method": "PUT",
+     "path": "/scim/v3/users/{userID}",
+     "summary": "Modify a user",
+     "tag": "ScimUsers",
+     "path_params": [
+      {
+       "name": "userID"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ScimUserModelV3",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "schemas",
+        "flag": "schemas",
+        "type": "string",
+        "array": true,
+        "binary": false,
+        "help": "Schemas"
+       },
+       {
+        "name": "id",
+        "flag": "id",
+        "type": "string",
+        "format": "uuid",
+        "array": false,
+        "binary": false,
+        "help": "Id"
+       },
+       {
+        "name": "userName",
+        "flag": "user-name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "User Name"
+       },
+       {
+        "name": "displayName",
+        "flag": "display-name",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Display Name"
+       },
+       {
+        "name": "locale",
+        "flag": "locale",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Locale"
+       },
+       {
+        "name": "timezone",
+        "flag": "timezone",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Time Zone"
+       },
+       {
+        "name": "externalId",
+        "flag": "external-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "External Id"
+       },
+       {
+        "name": "dateTimeFormat",
+        "flag": "date-time-format",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "DateTime Format"
+       },
+       {
+        "name": "groups",
+        "flag": "groups",
+        "type": "string",
+        "array": true,
+        "binary": false,
+        "help": "Groups"
+       },
+       {
+        "name": "password",
+        "flag": "password",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Passwords"
+       },
+       {
+        "name": "active",
+        "flag": "active",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "boolean flag of whether or not a user is active"
+       }
+      ],
+      "template": {
+       "schemas": [
+        ""
+       ],
+       "id": "00000000-0000-0000-0000-000000000000",
+       "userName": "",
+       "name": {
+        "givenName": "",
+        "familyName": "",
+        "middleName": ""
+       },
+       "emails": [
+        {
+         "primary": false,
+         "value": "",
+         "type": ""
+        }
+       ],
+       "displayName": "",
+       "locale": "",
+       "timezone": "",
+       "externalId": "",
+       "dateTimeFormat": "",
+       "groups": [
+        ""
+       ],
+       "password": "",
+       "active": false,
+       "roles": [
+        {
+         "primary": false,
+         "value": "",
+         "display": ""
+        }
+       ],
+       "entitlements": [
+        {
+         "primary": false,
+         "value": "",
+         "display": ""
+        }
+       ],
+       "meta": {
+        "resourceType": "",
+        "created": "2026-01-01T00:00:00Z"
+       }
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "patch",
+     "method": "PATCH",
+     "path": "/scim/v3/users/{userID}",
+     "summary": "Patch operation",
+     "tag": "ScimUsers",
+     "path_params": [
+      {
+       "name": "userID"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ScimUserPatchRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "schemas",
+        "flag": "schemas",
+        "type": "string",
+        "array": true,
+        "binary": false,
+        "help": "Schema of the request, should be urn:ietf:params:scim:api:messages:2.0:PatchOp"
+       }
+      ],
+      "template": {
+       "schemas": [
+        ""
+       ],
+       "operations": [
+        {
+         "op": "",
+         "path": "",
+         "value": [
+          {
+           "value": "",
+           "valueBoolean": false,
+           "active": false,
+           "timezone": "",
+           "locale": "",
+           "email": "",
+           "username": "",
+           "role": "",
+           "type": ""
+          }
+         ]
+        }
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "tasks",
+   "tag": "Tasks",
+   "commands": [
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/Tasks/{id}",
+     "summary": "Retrieves a detail of the Task",
+     "tag": "Tasks",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "TaskDetailModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  },
+  {
+   "name": "users",
+   "tag": "Users",
+   "commands": [
+    {
+     "verb": "list",
+     "method": "GET",
+     "path": "/v3/Users",
+     "summary": "Retrieves the list of Users with pagination (sorting and filtering)",
+     "tag": "Users",
+     "path_params": [],
+     "query_params": [
+      {
+       "name": "Sorts",
+       "flag": "sort",
+       "type": "object",
+       "array": true,
+       "required": false,
+       "help": "Allow for sorting on multiple properties using \"by\" and \"order\". \"Sorts[x].by\" specifies the property on which to sort e.g. name. \"Sorts[x].order\" specifies the order in which to sort e.g. asc or desc. The index \"x\" specifies the order the sorts are applied. The index must start at 0 and each index must be consecutive e.g. 0, 1, 2. For example Sorts[0].by, Sorts[0].order, Sorts[1].by, Sorts[1].order. Also supports repeated objects notation (multiple sorts): Sorts={\"By\":\"name\",\"Order\":\"Asc\"}\u0026Sorts={\"By\":\"created\",\"Order\":\"Desc\"}"
+      },
+      {
+       "name": "Pagination.PageSize",
+       "flag": "page-size",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The number of records per page, for example 1. Shouldn't exceed 200."
+      },
+      {
+       "name": "Pagination.PageNumber",
+       "flag": "page",
+       "type": "integer",
+       "format": "int32",
+       "array": false,
+       "required": false,
+       "help": "The page number to retrieve from results, for example 1"
+      },
+      {
+       "name": "Filter.EmailAddress",
+       "flag": "email-address",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "User email address"
+      },
+      {
+       "name": "Filter.RoleId",
+       "flag": "role-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Unique identifier of the GlobalRole"
+      },
+      {
+       "name": "Filter.PermissionId",
+       "flag": "permission-id",
+       "type": "string",
+       "format": "uuid",
+       "array": false,
+       "required": false,
+       "help": "Unique Identifier of the Permission"
+      },
+      {
+       "name": "Filter.LastSignedIn.Dates",
+       "flag": "last-signed-in-dates",
+       "type": "string",
+       "format": "date-time",
+       "array": true,
+       "required": false,
+       "help": "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      },
+      {
+       "name": "Filter.LastSignedIn.SelectionMode",
+       "flag": "last-signed-in-selection-mode",
+       "type": "string",
+       "array": false,
+       "enum": [
+        "Single",
+        "Multiple",
+        "Range"
+       ],
+       "required": false,
+       "help": "The selection mode of date criteria e.g single, multiple, range"
+      },
+      {
+       "name": "Filter.Disabled",
+       "flag": "disabled",
+       "type": "boolean",
+       "array": false,
+       "required": false,
+       "help": "Is user disabled"
+      },
+      {
+       "name": "Filter.Language",
+       "flag": "language",
+       "type": "string",
+       "array": false,
+       "required": false,
+       "help": "Language"
+      }
+     ],
+     "response_schema": "V3UserListItemModelPagedResponse",
+     "paged": true,
+     "is_list": true,
+     "destructive": false
+    },
+    {
+     "verb": "create",
+     "method": "POST",
+     "path": "/v3/Users",
+     "summary": "Creates user and assigns customized permissions or roles.",
+     "tag": "Users",
+     "path_params": [],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "V3CreateUserRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "emailAddress",
+        "flag": "email-address",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "EmailAddress"
+       },
+       {
+        "name": "olsonTimeZoneId",
+        "flag": "olson-time-zone-id",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "OlsonTimeZoneId"
+       },
+       {
+        "name": "dateTimeDisplayFormat",
+        "flag": "date-time-display-format",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "DateTimeDisplayFormat"
+       },
+       {
+        "name": "language",
+        "flag": "language",
+        "type": "string",
+        "array": false,
+        "binary": false,
+        "help": "Language"
+       },
+       {
+        "name": "enabled",
+        "flag": "enabled",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "Enabled"
+       },
+       {
+        "name": "admin",
+        "flag": "admin",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "admin"
+       },
+       {
+        "name": "allGroups",
+        "flag": "all-groups",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "full permissions for all groups"
+       },
+       {
+        "name": "groupRoles",
+        "flag": "group-roles",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "roles to assign all groups"
+       },
+       {
+        "name": "allPolicies",
+        "flag": "all-policies",
+        "type": "boolean",
+        "array": false,
+        "binary": false,
+        "help": "full permissions for all policies"
+       },
+       {
+        "name": "policyRoles",
+        "flag": "policy-roles",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "role to assign all policies"
+       },
+       {
+        "name": "globalRolesIds",
+        "flag": "global-roles-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "The list of System.Guid mentioning which global roles the user needs to have"
+       }
+      ],
+      "template": {
+       "emailAddress": "",
+       "olsonTimeZoneId": "",
+       "dateTimeDisplayFormat": "",
+       "language": "",
+       "enabled": false,
+       "roleResource": [
+        {
+         "resourceType": "",
+         "resourceId": "00000000-0000-0000-0000-000000000000",
+         "roleId": "00000000-0000-0000-0000-000000000000"
+        }
+       ],
+       "admin": false,
+       "allGroups": false,
+       "groupRoles": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "allPolicies": false,
+       "policyRoles": [
+        "00000000-0000-0000-0000-000000000000"
+       ],
+       "globalRolesIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "get",
+     "method": "GET",
+     "path": "/v3/Users/{id}",
+     "summary": "GET /v3/Users/{id}",
+     "tag": "Users",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "response_schema": "V3UserDetailModel",
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "update",
+     "method": "PUT",
+     "path": "/v3/Users/{id}",
+     "summary": "Modifies User",
+     "tag": "Users",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ModifyUserRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "emailAddress",
+        "flag": "email-address",
+        "type": "string",
+        "array": false,
+        "binary": false
+       },
+       {
+        "name": "olsonTimeZoneId",
+        "flag": "olson-time-zone-id",
+        "type": "string",
+        "array": false,
+        "binary": false
+       },
+       {
+        "name": "dateTimeDisplayFormat",
+        "flag": "date-time-display-format",
+        "type": "string",
+        "array": false,
+        "binary": false
+       },
+       {
+        "name": "language",
+        "flag": "language",
+        "type": "string",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "emailAddress": "",
+       "olsonTimeZoneId": "",
+       "dateTimeDisplayFormat": "",
+       "language": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "assign-roles",
+     "method": "POST",
+     "path": "/v3/Users/{id}/AssignRoles",
+     "summary": "Assign Roles to User",
+     "tag": "Users",
+     "path_params": [
+      {
+       "name": "id",
+       "help": "UserId"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "V3AssignUserToRolesRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "globalRolesIds",
+        "flag": "global-roles-ids",
+        "type": "string",
+        "format": "uuid",
+        "array": true,
+        "binary": false,
+        "help": "Global Roles Id List"
+       }
+      ],
+      "template": {
+       "roleResource": [
+        {
+         "resourceType": "",
+         "resourceId": "00000000-0000-0000-0000-000000000000",
+         "roleId": "00000000-0000-0000-0000-000000000000"
+        }
+       ],
+       "globalRolesIds": [
+        "00000000-0000-0000-0000-000000000000"
+       ]
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "disable",
+     "method": "PATCH",
+     "path": "/v3/Users/{id}/Disable",
+     "summary": "Disables User",
+     "tag": "Users",
+     "path_params": [
+      {
+       "name": "id",
+       "help": "UserId"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": true
+    },
+    {
+     "verb": "enable",
+     "method": "PATCH",
+     "path": "/v3/Users/{id}/Enable",
+     "summary": "Enables User",
+     "tag": "Users",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "modify-user-preferences",
+     "method": "PUT",
+     "path": "/v3/Users/{id}/ModifyUserPreferences",
+     "summary": "Modifies User Preferences",
+     "tag": "Users",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "body": {
+      "kind": "json",
+      "schema": "ModifyUserPreferencesRequest",
+      "required": false,
+      "is_array": false,
+      "fields": [
+       {
+        "name": "olsonTimeZoneId",
+        "flag": "olson-time-zone-id",
+        "type": "string",
+        "array": false,
+        "binary": false
+       },
+       {
+        "name": "dateTimeDisplayFormat",
+        "flag": "date-time-display-format",
+        "type": "string",
+        "array": false,
+        "binary": false
+       },
+       {
+        "name": "preferredLanguage",
+        "flag": "preferred-language",
+        "type": "string",
+        "array": false,
+        "binary": false
+       }
+      ],
+      "template": {
+       "olsonTimeZoneId": "",
+       "dateTimeDisplayFormat": "",
+       "preferredLanguage": ""
+      }
+     },
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    },
+    {
+     "verb": "resend-invite",
+     "method": "PATCH",
+     "path": "/v3/Users/{id}/ResendInvite",
+     "summary": "Resends invitation email to User",
+     "tag": "Users",
+     "path_params": [
+      {
+       "name": "id"
+      }
+     ],
+     "query_params": [],
+     "paged": false,
+     "is_list": false,
+     "destructive": false
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+# GoReleaser config — builds the release binaries when a tag v* is pushed
+# (see .github/workflows/release.yml). Local test without publishing:
+#   goreleaser release --snapshot --clean
+version: 2
+
+project_name: epm-cli
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - id: epm-cli
+    main: ./cmd/epm-cli
+    binary: epm-cli
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com/droidnik/epm-cli/internal/cli.Version={{ .Version }}
+    goos: [darwin, linux, windows]
+    goarch: [amd64, arm64]
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+# One macOS binary for Intel and Apple Silicon.
+universal_binaries:
+  - id: epm-cli
+    replace: true
+
+archives:
+  - id: default
+    # epm-cli_<version>_darwin_all.tar.gz, epm-cli_<version>_linux_amd64.tar.gz, …
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ if eq .Arch \"all\" }}all{{ else }}{{ .Arch }}{{ end }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  # Private repository: the release (and its assets) is only visible to people with repo access.
+  github:
+    owner: droidnik
+    name: epm-cli
+  draft: false
+  prerelease: auto

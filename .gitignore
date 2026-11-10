@@ -1,0 +1,5 @@
+/bin/
+/dist/
+epm-backup-*/
+*.test
+coverage.out
