@@ -11,36 +11,107 @@ extrahiert ist.
 
 ## Installation
 
-Das Repository ist privat. Installieren kann deshalb nur, wer Lesezugriff auf
-`droidnik/epm-cli` hat. Go wird dafür **nicht** benötigt.
+Das Repository ist privat. Installieren kann deshalb nur, wer Lesezugriff auf `droidnik/epm-cli`
+hat (GitHub CLI `gh auth login` oder ein Token in `GH_TOKEN`). Go wird **nicht** benötigt.
 
-### Mit dem Installationsskript (empfohlen)
+Jedes Release enthält:
 
-Voraussetzung: GitHub CLI angemeldet (`brew install gh && gh auth login`) oder ein Token in
-`GH_TOKEN` mit Lesezugriff auf das Repo.
+| Plattform | Datei | Inhalt |
+|---|---|---|
+| macOS | `epm-cli_<v>_darwin_all.pkg` | Installer → `/usr/local/bin/epm-cli` + Shell-Completions |
+| macOS | `epm-cli_<v>_darwin_all.zip` / `.tar.gz` | Universal-Binärdatei (Intel + Apple Silicon) |
+| Windows | `epm-cli_<v>_windows_amd64.zip` | `epm-cli.exe` (läuft auch auf ARM per Emulation) |
+| Linux | `.deb`, `.rpm`, `.apk`, `.tar.gz` | amd64 und arm64 |
+| Container | `ghcr.io/droidnik/epm-cli:<v>` | Multi-Arch-Image für CI/CD und Kubernetes |
+| alle | `checksums.txt`, `install.sh`, `install.ps1` | SHA-256-Prüfsummen, Installationsskripte |
+
+### macOS
+
+```sh
+# Installationsskript (lädt, prüft Checksumme, installiert)
+gh api repos/droidnik/epm-cli/contents/install.sh -H "Accept: application/vnd.github.raw" | sh
+
+# oder das Installer-Paket
+gh release download -R droidnik/epm-cli -p '*darwin_all.pkg'
+sudo installer -pkg epm-cli_*_darwin_all.pkg -target /
+```
+
+Das `.pkg` eignet sich für die **Verteilung per Jamf Pro** (Paket hochladen, Policy anlegen).
+Ist es nicht signiert, installiert Jamf es trotzdem problemlos. Nur ein Doppelklick im Finder wird
+von Gatekeeper blockiert. Eine ZIP aus dem Browser-Download ist unter Quarantäne; dann einmalig
+`xattr -d com.apple.quarantine epm-cli` ausführen (entfällt bei signierten Releases, siehe unten).
+
+### Windows
+
+```powershell
+# PowerShell, ohne Admin-Rechte: installiert nach %LOCALAPPDATA%\Programs\epm-cli und setzt den PATH
+gh api repos/droidnik/epm-cli/contents/install.ps1 -H "Accept: application/vnd.github.raw" | powershell -NoProfile -Command -
+
+# oder lokal / offline (z. B. als Intune-Win32-App mit ZIP + Skript)
+powershell -ExecutionPolicy Bypass -File install.ps1 -File .\epm-cli_0.2.0_windows_amd64.zip
+```
+
+### Linux
 
 ```sh
 gh api repos/droidnik/epm-cli/contents/install.sh -H "Accept: application/vnd.github.raw" | sh
+# oder Paket:
+gh release download -R droidnik/epm-cli -p '*_amd64.deb' && sudo apt install ./epm-cli_*_amd64.deb
+gh release download -R droidnik/epm-cli -p '*.x86_64.rpm' && sudo dnf install ./epm-cli-*.x86_64.rpm
 ```
 
-Das Skript lädt die passende Binärdatei aus dem neuesten Release (macOS Universal, Linux
-amd64/arm64), prüft die SHA-256-Checksumme und installiert nach `/usr/local/bin` (falls
-beschreibbar) oder `~/.local/bin`. Optionen: `-v v0.2.0` (Version), `-d ~/bin` (Zielordner).
-Aus einem Klon heraus: `sh install.sh`.
+Optionen der Skripte: Version (`-v v0.2.0` / `-Version`), Zielordner (`-d` / `-InstallDir`),
+lokales Archiv (`-f` / `-File`). Ein **Update** ist derselbe Aufruf.
 
-**Update:** denselben Befehl erneut ausführen. **Deinstallation:** `rm "$(command -v epm-cli)"`,
-optional auch `~/.config/epm-cli` und den Keychain-Eintrag „epm-cli“.
+### Docker, CI/CD und Kubernetes
 
-### Manuell
+Das Image ist privat in der GitHub Container Registry. Zum Pullen braucht man einen Token mit
+`read:packages`: `echo $TOKEN | docker login ghcr.io -u <user> --password-stdin`.
+Ohne Profil liest die CLI `EPM_URL`, `EPM_CLIENT_ID` und `EPM_CLIENT_SECRET` aus der Umgebung.
 
-Auf der Release-Seite (`gh release list -R droidnik/epm-cli`) das passende Archiv laden:
-`gh release download -R droidnik/epm-cli -p '*darwin_all.tar.gz'`. Dann entpacken und
-`epm-cli` in einen Ordner im `PATH` legen. Für Windows gibt es eine `.zip` mit `epm-cli.exe`.
+```sh
+docker run --rm -e EPM_URL=acme -e EPM_CLIENT_ID -e EPM_CLIENT_SECRET \
+  ghcr.io/droidnik/epm-cli:latest computers list --all -o json
+```
 
-### Mit Go
+GitHub Actions:
+
+```yaml
+jobs:
+  epm:
+    runs-on: ubuntu-latest
+    container: ghcr.io/droidnik/epm-cli:latest
+    env:
+      EPM_URL: acme
+      EPM_CLIENT_ID: ${{ secrets.EPM_CLIENT_ID }}
+      EPM_CLIENT_SECRET: ${{ secrets.EPM_CLIENT_SECRET }}
+    steps:
+      - run: epm-cli backup --dir backup && epm-cli overview -o json
+```
+
+GitLab CI (Entrypoint überschreiben, damit `script:` läuft):
+
+```yaml
+epm-backup:
+  image: { name: ghcr.io/droidnik/epm-cli:latest, entrypoint: [""] }
+  script:
+    - epm-cli doctor
+    - epm-cli backup --dir backup
+  artifacts: { paths: [backup/] }
+```
+
+Kubernetes (z. B. nächtliches Backup als CronJob): Image `ghcr.io/droidnik/epm-cli:<v>`,
+`args: ["backup", "--dir", "/data"]`, Zugangsdaten per `envFrom: secretRef`. Das Image läuft als
+Non-Root-User (UID 10001) und funktioniert mit `readOnlyRootFilesystem`, weil der Token-Cache
+unter `/tmp` liegt. `jq` ist im Image enthalten.
+
+### Mit Go / aus dem Quellcode
 
 ```sh
 GOPRIVATE=github.com/droidnik/* go install github.com/droidnik/epm-cli/cmd/epm-cli@latest
+# oder im Klon (Go ≥ 1.26):
+make build      # → ./bin/epm-cli
+make install    # → $(go env GOPATH)/bin/epm-cli
 ```
 
 ### Neue Version veröffentlichen
@@ -49,18 +120,15 @@ GOPRIVATE=github.com/droidnik/* go install github.com/droidnik/epm-cli/cmd/epm-c
 git tag v0.2.0 && git push origin v0.2.0
 ```
 
-Die GitHub Action `.github/workflows/release.yml` baut mit GoReleaser alle Binärdateien und
-erstellt das Release mit `checksums.txt`. `make snapshot` baut dasselbe lokal nach `dist/`,
-ohne etwas zu veröffentlichen. Bei jedem Push auf `main` laufen die Tests (`ci.yml`).
+`.github/workflows/release.yml` baut auf einem macOS-Runner mit GoReleaser alle Pakete und das
+`.pkg` und erstellt das Release. Ein zweiter Job baut das Container-Image und pusht es. Lokal
+ohne Veröffentlichung: `make snapshot` (Pakete nach `dist/`) und `make image` (braucht Docker).
 
-### Aus dem Quellcode
-
-Voraussetzung: Go ≥ 1.26 (`brew install go`).
-
-```sh
-make build      # → ./bin/epm-cli
-make install    # → $(go env GOPATH)/bin/epm-cli
-```
+**Signieren und Notarisieren (optional):** Sind die Repository-Secrets `MACOS_CERTS_P12`,
+`MACOS_CERTS_PASSWORD`, `CODESIGN_IDENTITY` und `PKG_SIGN_IDENTITY` gesetzt (optional zusätzlich
+`NOTARY_KEY_P8`, `NOTARY_KEY_ID`, `NOTARY_ISSUER` für die Notarisierung), werden Binärdatei und
+`.pkg` mit einer Developer ID signiert und notarisiert. Ohne Secrets bleiben sie unsigniert.
+Details stehen im Kopf von `release.yml` und `scripts/build-pkg.sh`.
 
 ## Einrichtung
 
@@ -188,6 +256,10 @@ internal/ojson/       JSON mit erhaltener Feldreihenfolge
 internal/spec/        commands.json (generiert, per go:embed eingebettet)
 spec/openapi-v3.json  aus der Doku extrahierte OpenAPI-Spezifikation
 tools/specgen/        Spec herunterladen (fetch) und Befehlstabelle erzeugen (gen)
+scripts/              .pkg-Bau, Shell-Completions für Pakete
+install.sh/.ps1       Installationsskripte (macOS/Linux, Windows)
+Dockerfile            Container-Image
+.goreleaser.yaml      Release-Pakete; .github/workflows/ CI und Release
 ```
 
 ```sh

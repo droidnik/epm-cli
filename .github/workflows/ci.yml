@@ -25,3 +25,22 @@ jobs:
         run: |
           go run ./tools/specgen gen
           git diff --exit-code internal/spec/commands.json
+
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image (amd64 + arm64, not pushed)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: epm-cli:ci
+      - name: Smoke test
+        run: |
+          docker buildx build --load -t epm-cli:smoke .
+          docker run --rm epm-cli:smoke version
+          docker run --rm epm-cli:smoke commands computers -o json | jq -e 'length > 10'

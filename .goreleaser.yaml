@@ -1,6 +1,13 @@
-# GoReleaser config — builds the release binaries when a tag v* is pushed
+# GoReleaser config — builds all release artifacts when a tag v* is pushed
 # (see .github/workflows/release.yml). Local test without publishing:
-#   goreleaser release --snapshot --clean
+#   make snapshot
+#
+# Artifacts:
+#   macOS    epm-cli_<v>_darwin_all.tar.gz / .zip   universal binary (Intel + Apple Silicon)
+#            epm-cli_<v>_darwin_all.pkg             installer → /usr/local/bin (scripts/build-pkg.sh)
+#   Windows  epm-cli_<v>_windows_amd64.zip          + install.ps1
+#   Linux    epm-cli_<v>_linux_{amd64,arm64}.tar.gz, .deb, .rpm, .apk
+#   Docker   ghcr.io/droidnik/epm-cli               (separate job, see Dockerfile)
 version: 2
 
 project_name: epm-cli
@@ -9,6 +16,7 @@ before:
   hooks:
     - go mod tidy
     - go test ./...
+    - sh scripts/completions.sh
 
 builds:
   - id: epm-cli
@@ -26,24 +34,52 @@ builds:
       - goos: windows
         goarch: arm64
 
-# One macOS binary for Intel and Apple Silicon.
+# One macOS binary for Intel and Apple Silicon; the post hook builds the .pkg
+# (and signs/notarizes it when the signing variables are set).
 universal_binaries:
   - id: epm-cli
     replace: true
+    hooks:
+      post:
+        - cmd: sh scripts/build-pkg.sh "{{ .Path }}" "{{ .Version }}" dist
+          output: true
 
 archives:
   - id: default
     # epm-cli_<version>_darwin_all.tar.gz, epm-cli_<version>_linux_amd64.tar.gz, …
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ if eq .Arch \"all\" }}all{{ else }}{{ .Arch }}{{ end }}"
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ if eq .Arch "all" }}all{{ else }}{{ .Arch }}{{ end }}
     formats: [tar.gz]
     format_overrides:
+      - goos: darwin
+        formats: [tar.gz, zip]
       - goos: windows
         formats: [zip]
     files:
       - README.md
+      - completions/*
+
+nfpms:
+  - id: linux-packages
+    package_name: epm-cli
+    file_name_template: "{{ .ConventionalFileName }}"
+    homepage: https://github.com/droidnik/epm-cli
+    maintainer: droidnik
+    description: Command-line interface for the BeyondTrust EPM for Windows and Mac Management API.
+    formats: [deb, rpm, apk]
+    bindir: /usr/bin
+    contents:
+      - src: completions/epm-cli.bash
+        dst: /usr/share/bash-completion/completions/epm-cli
+      - src: completions/epm-cli.zsh
+        dst: /usr/share/zsh/vendor-completions/_epm-cli
+      - src: completions/epm-cli.fish
+        dst: /usr/share/fish/vendor_completions.d/epm-cli.fish
 
 checksum:
   name_template: checksums.txt
+  extra_files:
+    - glob: ./dist/*.pkg
 
 snapshot:
   version_template: "{{ incpatch .Version }}-next"
@@ -57,9 +93,13 @@ changelog:
       - "^chore:"
 
 release:
-  # Private repository: the release (and its assets) is only visible to people with repo access.
+  # Private repository: the release and its assets are only visible to people with repo access.
   github:
     owner: droidnik
     name: epm-cli
   draft: false
   prerelease: auto
+  extra_files:
+    - glob: ./dist/*.pkg
+    - glob: ./install.sh
+    - glob: ./install.ps1

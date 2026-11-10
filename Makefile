@@ -3,7 +3,7 @@ PKG     := ./cmd/epm-cli
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X github.com/droidnik/epm-cli/internal/cli.Version=$(VERSION)
 
-.PHONY: build install test vet spec generate snapshot clean
+.PHONY: build install test vet spec generate snapshot image clean
 
 build: ## Build ./bin/epm-cli for this machine
 	go build -trimpath -ldflags "$(LDFLAGS)" -o bin/$(BINARY) $(PKG)
@@ -27,5 +27,8 @@ generate: ## Regenerate internal/spec/commands.json from spec/openapi-v3.json
 snapshot: ## Build all release archives locally into dist/ (nothing is published)
 	goreleaser release --snapshot --clean
 
+image: ## Build the container image locally (needs docker)
+	docker build -t epm-cli:dev --build-arg VERSION=$(VERSION) .
+
 clean:
-	rm -rf bin dist
+	rm -rf bin dist completions

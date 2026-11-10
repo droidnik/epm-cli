@@ -3,3 +3,4 @@
 epm-backup-*/
 *.test
 coverage.out
+completions/
