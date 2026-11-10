@@ -21,10 +21,11 @@ jobs:
           go-version-file: go.mod
       - run: go vet ./...
       - run: go test -race ./...
-      - name: generated command table is up to date
+      - name: generated command table and reference docs are up to date
         run: |
           go run ./tools/specgen gen
-          git diff --exit-code internal/spec/commands.json
+          go run ./tools/specgen docs
+          git diff --exit-code internal/spec/commands.json docs/reference
 
   image:
     runs-on: ubuntu-latest

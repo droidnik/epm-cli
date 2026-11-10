@@ -1,273 +1,157 @@
 # epm-cli
 
-Kommandozeilen-Tool für **BeyondTrust Endpoint Privilege Management for Windows and Mac**
-(PM Cloud, Management API v3), aufgebaut nach dem Vorbild von
-[jamf-cli](https://github.com/Jamf-Concepts/jamf-cli): eine einzelne Go-Binärdatei mit Profilen,
-Keychain, mehreren Ausgabeformaten, Dry-Run, Sicherheitsabfragen und MCP-Server für KI-Agenten.
+Command-line interface for **BeyondTrust Endpoint Privilege Management for Windows and Mac**
+(EPM-WM / PM Cloud, Management API v3), modelled on
+[jamf-cli](https://github.com/Jamf-Concepts/jamf-cli): a single binary with tenant profiles, Keychain
+storage, several output formats, automatic paging, dry runs, confirmation for destructive actions,
+backups and an MCP server for AI assistants.
 
-Alle 94 Operationen der v3-API stehen als Befehle bereit. Sie werden aus der OpenAPI-Spezifikation
-generiert, die aus der [offiziellen API-Referenz](https://docs.beyondtrust.com/epm-wm/reference/get_v3-accepteddomains)
-extrahiert ist.
+All 94 operations of the v3 API are available as commands. They are generated from the OpenAPI
+specification extracted from the [official API reference](https://docs.beyondtrust.com/epm-wm/reference/get_v3-accepteddomains).
+
+```sh
+epm-cli computers list --os Mac --days-disconnected 30 --all -o csv --out-file stale.csv
+epm-cli policies content <POLICY-ID> --out-file policy.xml
+epm-cli policies upload <POLICY-ID> --policy-file policy.xml --auto-assign-to-group
+epm-cli admin-access-requests decide --request-id <ID> --decision Approved --duration 1800 …
+epm-cli backup --dir ./epm-config
+```
+
+## Documentation
+
+| | |
+|---|---|
+| [1. Getting started](docs/01-getting-started.md) | install, API account, connect a tenant, first commands |
+| [2. Basics](docs/02-basics.md) | command structure, flags, output, filters, paging, request bodies, safety, exit codes |
+| [3. Workflows](docs/03-workflows.md) | computers, groups, policies, JIT admin requests, events, users, backup |
+| [4. Automation](docs/04-automation.md) | scripts, GitHub Actions, GitLab CI, Docker, Kubernetes, MCP |
+| [5. Troubleshooting](docs/05-troubleshooting.md) | `doctor`, common errors, verbose logging |
+| [Command reference](docs/reference/README.md) | every command with all flags, values and body templates (generated) |
 
 ## Installation
 
-Das Repository ist privat. Installieren kann deshalb nur, wer Lesezugriff auf `droidnik/epm-cli`
-hat (GitHub CLI `gh auth login` oder ein Token in `GH_TOKEN`). Go wird **nicht** benötigt.
+The repository is private: you need read access to `droidnik/epm-cli` and a logged-in GitHub CLI
+(`gh auth login`) or a token in `GH_TOKEN`. No Go toolchain is required.
 
-Jedes Release enthält:
+Every release contains:
 
-| Plattform | Datei | Inhalt |
+| Platform | File | Contents |
 |---|---|---|
-| macOS | `epm-cli_<v>_darwin_all.pkg` | Installer → `/usr/local/bin/epm-cli` + Shell-Completions |
-| macOS | `epm-cli_<v>_darwin_all.zip` / `.tar.gz` | Universal-Binärdatei (Intel + Apple Silicon) |
-| Windows | `epm-cli_<v>_windows_amd64.zip` | `epm-cli.exe` (läuft auch auf ARM per Emulation) |
-| Linux | `.deb`, `.rpm`, `.apk`, `.tar.gz` | amd64 und arm64 |
-| Container | `ghcr.io/droidnik/epm-cli:<v>` | Multi-Arch-Image für CI/CD und Kubernetes |
-| alle | `checksums.txt`, `install.sh`, `install.ps1` | SHA-256-Prüfsummen, Installationsskripte |
+| macOS | `epm-cli_<v>_darwin_all.pkg` | installer → `/usr/local/bin/epm-cli` + shell completions |
+| macOS | `epm-cli_<v>_darwin_all.zip` / `.tar.gz` | universal binary (Intel + Apple Silicon) |
+| Windows | `epm-cli_<v>_windows_amd64.zip` | `epm-cli.exe` (also runs on ARM through emulation) |
+| Linux | `.deb`, `.rpm`, `.apk`, `.tar.gz` | amd64 and arm64 |
+| Container | `ghcr.io/droidnik/epm-cli:<v>` | multi-arch image for CI/CD and Kubernetes |
+| all | `checksums.txt`, `install.sh`, `install.ps1` | SHA-256 checksums, installer scripts |
 
-### macOS
+**macOS / Linux**
 
 ```sh
-# Installationsskript (lädt, prüft Checksumme, installiert)
 gh api repos/droidnik/epm-cli/contents/install.sh -H "Accept: application/vnd.github.raw" | sh
+```
 
-# oder das Installer-Paket
+The script downloads the right archive, verifies its checksum and installs to `/usr/local/bin` (if
+writable) or `~/.local/bin`. Options: `-v v0.2.0` (version), `-d ~/bin` (directory), `-f <archive>`
+(offline). Running it again updates the CLI.
+
+**macOS package** (suitable for deployment with Jamf Pro)
+
+```sh
 gh release download -R droidnik/epm-cli -p '*darwin_all.pkg'
 sudo installer -pkg epm-cli_*_darwin_all.pkg -target /
 ```
 
-Das `.pkg` eignet sich für die **Verteilung per Jamf Pro** (Paket hochladen, Policy anlegen).
-Ist es nicht signiert, installiert Jamf es trotzdem problemlos. Nur ein Doppelklick im Finder wird
-von Gatekeeper blockiert. Eine ZIP aus dem Browser-Download ist unter Quarantäne; dann einmalig
-`xattr -d com.apple.quarantine epm-cli` ausführen (entfällt bei signierten Releases, siehe unten).
+Unsigned packages install fine through Jamf or `installer`; only a double-click in Finder is blocked by
+Gatekeeper. A ZIP downloaded in a browser is quarantined: run `xattr -d com.apple.quarantine epm-cli`
+once (not needed for signed releases, see below).
 
-### Windows
+**Windows** (PowerShell, no admin rights; installs to `%LOCALAPPDATA%\Programs\epm-cli` and updates the
+user PATH)
 
 ```powershell
-# PowerShell, ohne Admin-Rechte: installiert nach %LOCALAPPDATA%\Programs\epm-cli und setzt den PATH
 gh api repos/droidnik/epm-cli/contents/install.ps1 -H "Accept: application/vnd.github.raw" | powershell -NoProfile -Command -
-
-# oder lokal / offline (z. B. als Intune-Win32-App mit ZIP + Skript)
+# offline, e.g. packaged as an Intune Win32 app:
 powershell -ExecutionPolicy Bypass -File install.ps1 -File .\epm-cli_0.2.0_windows_amd64.zip
 ```
 
-### Linux
+**Linux packages**
 
 ```sh
-gh api repos/droidnik/epm-cli/contents/install.sh -H "Accept: application/vnd.github.raw" | sh
-# oder Paket:
 gh release download -R droidnik/epm-cli -p '*_amd64.deb' && sudo apt install ./epm-cli_*_amd64.deb
 gh release download -R droidnik/epm-cli -p '*.x86_64.rpm' && sudo dnf install ./epm-cli-*.x86_64.rpm
 ```
 
-Optionen der Skripte: Version (`-v v0.2.0` / `-Version`), Zielordner (`-d` / `-InstallDir`),
-lokales Archiv (`-f` / `-File`). Ein **Update** ist derselbe Aufruf.
-
-### Docker, CI/CD und Kubernetes
-
-Das Image ist privat in der GitHub Container Registry. Zum Pullen braucht man einen Token mit
-`read:packages`: `echo $TOKEN | docker login ghcr.io -u <user> --password-stdin`.
-Ohne Profil liest die CLI `EPM_URL`, `EPM_CLIENT_ID` und `EPM_CLIENT_SECRET` aus der Umgebung.
+**Docker** (private image; log in with a token that has `read:packages`)
 
 ```sh
 docker run --rm -e EPM_URL=acme -e EPM_CLIENT_ID -e EPM_CLIENT_SECRET \
   ghcr.io/droidnik/epm-cli:latest computers list --all -o json
 ```
 
-GitHub Actions:
+CI/CD and Kubernetes examples: [4. Automation](docs/04-automation.md).
 
-```yaml
-jobs:
-  epm:
-    runs-on: ubuntu-latest
-    container: ghcr.io/droidnik/epm-cli:latest
-    env:
-      EPM_URL: acme
-      EPM_CLIENT_ID: ${{ secrets.EPM_CLIENT_ID }}
-      EPM_CLIENT_SECRET: ${{ secrets.EPM_CLIENT_SECRET }}
-    steps:
-      - run: epm-cli backup --dir backup && epm-cli overview -o json
-```
-
-GitLab CI (Entrypoint überschreiben, damit `script:` läuft):
-
-```yaml
-epm-backup:
-  image: { name: ghcr.io/droidnik/epm-cli:latest, entrypoint: [""] }
-  script:
-    - epm-cli doctor
-    - epm-cli backup --dir backup
-  artifacts: { paths: [backup/] }
-```
-
-Kubernetes (z. B. nächtliches Backup als CronJob): Image `ghcr.io/droidnik/epm-cli:<v>`,
-`args: ["backup", "--dir", "/data"]`, Zugangsdaten per `envFrom: secretRef`. Das Image läuft als
-Non-Root-User (UID 10001) und funktioniert mit `readOnlyRootFilesystem`, weil der Token-Cache
-unter `/tmp` liegt. `jq` ist im Image enthalten.
-
-### Mit Go / aus dem Quellcode
+**With Go / from source** (Go ≥ 1.26)
 
 ```sh
 GOPRIVATE=github.com/droidnik/* go install github.com/droidnik/epm-cli/cmd/epm-cli@latest
-# oder im Klon (Go ≥ 1.26):
 make build      # → ./bin/epm-cli
 make install    # → $(go env GOPATH)/bin/epm-cli
 ```
 
-### Neue Version veröffentlichen
+## Quick start
 
 ```sh
-git tag v0.2.0 && git push origin v0.2.0
+epm-cli config add prod      # tenant, client ID, secret (stored in the macOS Keychain)
+epm-cli doctor               # verify DNS, TLS, token and API access
+epm-cli overview             # tenant summary
+epm-cli --help               # all commands
 ```
 
-`.github/workflows/release.yml` baut auf einem macOS-Runner mit GoReleaser alle Pakete und das
-`.pkg` und erstellt das Release. Ein zweiter Job baut das Container-Image und pusht es. Lokal
-ohne Veröffentlichung: `make snapshot` (Pakete nach `dist/`) und `make image` (braucht Docker).
+Create the API account in the EPM console under **Configuration › Settings › API Settings**. Details:
+[Getting started](docs/01-getting-started.md).
 
-**Signieren und Notarisieren (optional):** Sind die Repository-Secrets `MACOS_CERTS_P12`,
-`MACOS_CERTS_PASSWORD`, `CODESIGN_IDENTITY` und `PKG_SIGN_IDENTITY` gesetzt (optional zusätzlich
-`NOTARY_KEY_P8`, `NOTARY_KEY_ID`, `NOTARY_ISSUER` für die Notarisierung), werden Binärdatei und
-`.pkg` mit einer Developer ID signiert und notarisiert. Ohne Secrets bleiben sie unsigniert.
-Details stehen im Kopf von `release.yml` und `scripts/build-pkg.sh`.
-
-## Einrichtung
-
-1. In der EPM-Konsole unter **Configuration › Settings › API Settings** einen API-Account anlegen
-   (Management API-Zugriff). Client-ID und Secret notieren.
-2. Profil anlegen. Das Secret landet in der macOS-Keychain (Dienst `epm-cli`):
+## Releasing
 
 ```sh
-epm-cli config add prod                 # fragt Tenant, Client-ID und Secret ab
-epm-cli doctor                          # prüft DNS, TLS, Token und API
+git tag v0.3.0 && git push origin v0.3.0
 ```
 
-Für den Tenant reicht der Name (`acme`), die Konsolen-URL oder die API-URL. Daraus wird
-`https://acme-services.pm.beyondtrustcloud.com`.
+`.github/workflows/release.yml` builds every package with GoReleaser on a macOS runner (needed for the
+`.pkg`), publishes the GitHub release and pushes the container image. Locally, without publishing:
+`make snapshot` (packages into `dist/`) and `make image` (needs Docker).
 
-Nicht-interaktiv (z. B. CI):
+**Signing and notarization (optional).** When the repository secrets `MACOS_CERTS_P12`,
+`MACOS_CERTS_PASSWORD`, `CODESIGN_IDENTITY` and `PKG_SIGN_IDENTITY` exist (plus `NOTARY_KEY_P8`,
+`NOTARY_KEY_ID`, `NOTARY_ISSUER` for notarization), the binary and the `.pkg` are signed with a
+Developer ID and notarized. Without them, the artifacts are unsigned. See the header of `release.yml`
+and `scripts/build-pkg.sh`.
 
-```sh
-epm-cli config add prod --url acme --client-id "$ID" --client-secret-stdin <<< "$SECRET"
-# oder ganz ohne Profil:
-export EPM_URL=acme EPM_CLIENT_ID=… EPM_CLIENT_SECRET=…
-```
-
-Mehrere Tenants: `epm-cli config list`, `epm-cli config use sandbox`, `-p sandbox` pro Aufruf.
-
-## Benutzung
-
-```sh
-epm-cli <ressource> <aktion> [ID] [flags]
-
-epm-cli computers list --os Mac --all                  # alle Seiten
-epm-cli computers list --connection-status Disconnected --days-disconnected 30 -o csv --out-file stale.csv
-epm-cli computers get 59A00329-87AC-49EC-BC2C-9B9E26F05185 -o yaml
-epm-cli groups list --columns id,name,computerCount,policyName
-epm-cli groups assign-computers <GROUP-ID> --computer-ids id1,id2
-epm-cli policies content <POLICY-ID> --out-file policy.xml
-epm-cli policies upload <POLICY-ID> --policy-file policy.xml --auto-assign-to-group
-epm-cli events search --start-date 2026-11-01 --end-date 2026-11-10 --operating-system Windows
-epm-cli admin-access-requests list --active-only
-epm-cli overview
-epm-cli backup --dir ./epm-backup        # Policies inkl. XML, Gruppen, Benutzer, Rollen …
-```
-
-Übersicht und Details:
-
-```sh
-epm-cli --help                       # alle Ressourcen, gruppiert
-epm-cli commands policy              # alle Operationen mit Methode/Pfad, filterbar
-epm-cli groups create --help         # Flags einer Operation
-epm-cli groups create --body-template   # Beispiel-Body
-epm-cli api GET /v3/About            # Rohzugriff auf jeden Endpunkt
-```
-
-### Request-Bodies
-
-Einfache Felder gibt es als Flags (`--name`, `--computer-ids a,b`). Verschachtelte Felder setzt
-man mit `--set pfad=wert`, ganze Bodies mit `--body` (inline, `@datei.json` oder `-` für stdin).
-Flags werden über `--body` gelegt:
-
-```sh
-epm-cli computers authorise --body @auth.json --group-id <GROUP-ID> --set filter.os=Windows
-```
-
-Boolesche Flags: `--active-only` heißt true, `--is-default=false` heißt false. Enum-Werte
-sind unabhängig von Groß-/Kleinschreibung (`--os mac`).
-
-### Ausgabe
-
-| Flag | Wirkung |
-|---|---|
-| `-o table\|json\|ndjson\|csv\|yaml\|plain\|raw` | Format (Standard: table) |
-| `--field pfad` | ein Feld pro Eintrag, z. B. `--field id` |
-| `--columns a,b.c` | Spalten für table/csv/plain |
-| `--wide` | alle Spalten, nichts kürzen |
-| `--out-file datei` | in Datei statt stdout |
-| `--all` / `--max-pages N` | alle Seiten laden (Computers automatisch nach `created asc` sortiert, wie von BeyondTrust empfohlen) |
-
-Hinweise und Fortschritt gehen nach stderr (`-q` schaltet sie ab). `EPM_CLI_ARGS` stellt jedem
-Aufruf Standard-Flags voran, z. B. `export EPM_CLI_ARGS='-p prod -o json'`.
-
-### Sicherheit
-
-- **Destruktive Aktionen** (`delete`, `reject`, `archive`, `deactivate`, `clear-policy`, `disable`,
-  `discard-draft`, `unassign-computers` …) fragen nach. Ohne Terminal brechen sie ab, solange
-  kein `--yes` angegeben ist.
-- **`-n/--dry-run`** zeigt Methode, URL und Body und sendet nichts.
-- Secrets liegen in der Keychain und werden über stdin an `security` übergeben, nicht in der
-  Prozessliste. Config und Token-Cache haben die Rechte 0600.
-- Rate-Limit der API: 1000 Requests pro 100 s. Bei HTTP 429 wartet die CLI und versucht es erneut.
-
-### Exit-Codes
-
-`0` ok · `1` allgemein · `2` Bedienfehler/Konfiguration · `3` Auth (401/403) · `4` nicht gefunden ·
-`5` sonstige 4xx · `6` 5xx/Netzwerk · `130` abgebrochen.
-Mit `-o json` erscheinen Fehler als JSON auf stderr.
-
-### Shell-Completion
-
-```sh
-epm-cli completion zsh > "${fpath[1]}/_epm-cli"      # auch bash, fish, powershell
-```
-
-Ressourcen, Aktionen, Flags, Enum-Werte und Profilnamen werden vervollständigt.
-
-## MCP-Server (Claude & Co.)
-
-```sh
-claude mcp add epm-cli -- epm-cli mcp                         # nur lesend
-claude mcp add epm-cli -- epm-cli mcp -p sandbox --allow-writes
-```
-
-Tools: `list_commands`, `describe_command`, `run_command`. Standardmäßig sind nur lesende
-Operationen erlaubt. Mit `--allow-writes` sind Schreibzugriffe freigegeben; destruktive brauchen
-zusätzlich `confirm=true`. `epm-cli agent-context` gibt Agenten eine Kurzanleitung.
-
-## Entwicklung
+## Development
 
 ```
 cmd/epm-cli/          main
-internal/cli/         cobra-Befehle, generierte Operationen, MCP
-internal/client/      HTTP, OAuth-Token-Cache, Retry, Pagination, Multipart
-internal/config/      Profile, URL-Normalisierung, Keychain
-internal/output/      table/json/csv/yaml/…
-internal/ojson/       JSON mit erhaltener Feldreihenfolge
-internal/spec/        commands.json (generiert, per go:embed eingebettet)
-spec/openapi-v3.json  aus der Doku extrahierte OpenAPI-Spezifikation
-tools/specgen/        Spec herunterladen (fetch) und Befehlstabelle erzeugen (gen)
-scripts/              .pkg-Bau, Shell-Completions für Pakete
-install.sh/.ps1       Installationsskripte (macOS/Linux, Windows)
-Dockerfile            Container-Image
-.goreleaser.yaml      Release-Pakete; .github/workflows/ CI und Release
+internal/cli/         cobra commands, generated API operations, MCP server
+internal/client/      HTTP, OAuth token cache, retries, paging, multipart
+internal/config/      profiles, URL normalization, Keychain
+internal/output/      table / json / csv / yaml / …
+internal/ojson/       JSON with preserved key order
+internal/spec/        commands.json (generated, embedded with go:embed)
+spec/openapi-v3.json  OpenAPI specification extracted from the docs
+tools/specgen/        fetch the spec, generate the command table and the reference docs
+docs/                 user guide; docs/reference/ is generated
+scripts/              .pkg build, shell completions for packages
+install.sh/.ps1       installers (macOS/Linux, Windows)
+Dockerfile            container image
+.goreleaser.yaml      release packages; .github/workflows/ CI and release
 ```
 
 ```sh
-make test        # Tests gegen einen Mock-Server
-make spec        # Spec neu aus der Doku ziehen + Befehle neu generieren
-make generate    # nur Befehle neu generieren
+make test        # tests against a mock API server
+make spec        # re-download the spec from docs.beyondtrust.com, regenerate commands and docs
+make generate    # regenerate internal/spec/commands.json and docs/reference/
+make docs        # regenerate docs/reference/ only
 ```
 
-Befehlsnamen, Verb-Overrides und die Liste destruktiver Aktionen stehen in
-`tools/specgen/main.go`. Mit Tenant-Zugang lässt sich die offizielle Spezifikation auch direkt
-laden: `epm-cli api-definition download --out-file spec/openapi-v3.yaml`.
+Command names, verb overrides and the list of destructive actions are defined in
+`tools/specgen/main.go`. With tenant access, the official spec can also be downloaded directly:
+`epm-cli api-definition download --out-file spec/openapi-v3.yaml`.

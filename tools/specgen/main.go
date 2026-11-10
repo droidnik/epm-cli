@@ -29,7 +29,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: specgen fetch|gen [flags]")
+		fmt.Fprintln(os.Stderr, "usage: specgen fetch|gen|docs [flags]")
 		os.Exit(2)
 	}
 	var err error
@@ -39,6 +39,12 @@ func main() {
 		out := fs.String("out", "spec/openapi-v3.json", "output file")
 		_ = fs.Parse(os.Args[2:])
 		err = fetch(*out)
+	case "docs":
+		fs := flag.NewFlagSet("docs", flag.ExitOnError)
+		in := fs.String("in", "internal/spec/commands.json", "command table")
+		out := fs.String("out", "docs/reference", "output directory")
+		_ = fs.Parse(os.Args[2:])
+		err = writeDocs(*in, *out)
 	case "gen":
 		fs := flag.NewFlagSet("gen", flag.ExitOnError)
 		in := fs.String("spec", "spec/openapi-v3.json", "OpenAPI spec (JSON)")
