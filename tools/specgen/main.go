@@ -68,6 +68,8 @@ const (
 	startPage = docsBase + "/epm-wm/reference/get_v3-accepteddomains"
 )
 
+var internalHostRe = regexp.MustCompile(`https://[a-z0-9-]+\.epm\.bt3ng\.com`)
+
 var slugRe = regexp.MustCompile(`/epm-wm/reference/(get|post|put|patch|delete)_(v3-|policyeditor-v3|scim-v3)[a-z0-9_-]*`)
 
 func httpGet(url string) (string, error) {
@@ -199,6 +201,8 @@ func fetch(outPath string) error {
 	if err != nil {
 		return err
 	}
+	// The published spec names an internal BeyondTrust test host as token URL; don't redistribute it.
+	b = internalHostRe.ReplaceAll(b, []byte("https://<tenant>-services.pm.beyondtrustcloud.com"))
 	if err := os.MkdirAll(filepath.Dir(outPath), 0o755); err != nil {
 		return err
 	}

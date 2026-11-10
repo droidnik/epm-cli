@@ -67,12 +67,9 @@ epm-cli groups assign-computers "$group" --computer-ids "$ids"
 ## Docker
 
 The image `ghcr.io/droidnik/epm-cli` contains the CLI, `jq` and CA certificates. It runs as a non-root
-user and works with a read-only root filesystem. It is private: log in first with a GitHub token that
-has `read:packages`.
+user and works with a read-only root filesystem.
 
 ```sh
-echo "$GITHUB_TOKEN" | docker login ghcr.io -u <github-user> --password-stdin
-
 docker run --rm -e EPM_URL=acme -e EPM_CLIENT_ID -e EPM_CLIENT_SECRET \
   ghcr.io/droidnik/epm-cli:latest computers list --all -o json
 
@@ -82,7 +79,7 @@ docker run --rm -e EPM_URL=acme -e EPM_CLIENT_ID -e EPM_CLIENT_SECRET \
   ghcr.io/droidnik/epm-cli:latest backup --dir /data/epm-config
 ```
 
-Pin a version (`:0.2.0`) for reproducible pipelines; `:latest` follows the newest release.
+Pin a version (`:0.3.0`) for reproducible pipelines; `:latest` follows the newest release.
 
 ## GitHub Actions
 
@@ -100,16 +97,12 @@ on:
 
 permissions:
   contents: write
-  packages: read
 
 jobs:
   backup:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/droidnik/epm-cli:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
       options: --user root   # checkout and apk need to write as root inside the job container
     env:
       EPM_URL: acme
@@ -147,7 +140,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/droidnik/epm-cli:latest
-      credentials: { username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
       options: --user root
     env:
       EPM_URL: acme
@@ -181,9 +173,6 @@ epm-backup:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 ```
 
-The private GHCR image needs a `DOCKER_AUTH_CONFIG` variable with a GitHub token, or mirror the image
-into your GitLab registry.
-
 ## Kubernetes
 
 Nightly export as a CronJob:
@@ -207,10 +196,9 @@ spec:
       template:
         spec:
           restartPolicy: Never
-          imagePullSecrets: [{ name: ghcr }]          # docker-registry secret for ghcr.io
           containers:
             - name: epm-cli
-              image: ghcr.io/droidnik/epm-cli:0.2.0
+              image: ghcr.io/droidnik/epm-cli:0.3.0
               args: ["backup", "--dir", "/data"]
               envFrom: [{ secretRef: { name: epm-cli } }]
               securityContext:

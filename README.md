@@ -17,6 +17,13 @@ epm-cli admin-access-requests decide --request-id <ID> --decision Approved --dur
 epm-cli backup --dir ./epm-config
 ```
 
+> **Status: early release (v0.x).** epm-cli has been tested against a mock of the API, but not yet against
+> a production tenant. Try it on a sandbox tenant first, use `--dry-run` before changes, and note that
+> some commands delete data (they ask for confirmation). Use at your own risk, see [LICENSE](LICENSE).
+>
+> epm-cli is an independent project. It is **not affiliated with, endorsed by or supported by BeyondTrust**;
+> "BeyondTrust" and "Privilege Management" are trademarks of their respective owners.
+
 ## Documentation
 
 | | |
@@ -30,8 +37,8 @@ epm-cli backup --dir ./epm-config
 
 ## Installation
 
-The repository is private: you need read access to `droidnik/epm-cli` and a logged-in GitHub CLI
-(`gh auth login`) or a token in `GH_TOKEN`. No Go toolchain is required.
+Pre-built binaries are attached to every [release](https://github.com/droidnik/epm-cli/releases). No Go
+toolchain is required.
 
 Every release contains:
 
@@ -47,17 +54,17 @@ Every release contains:
 **macOS / Linux**
 
 ```sh
-gh api repos/droidnik/epm-cli/contents/install.sh -H "Accept: application/vnd.github.raw" | sh
+curl -fsSL https://raw.githubusercontent.com/droidnik/epm-cli/main/install.sh | sh
 ```
 
 The script downloads the right archive, verifies its checksum and installs to `/usr/local/bin` (if
-writable) or `~/.local/bin`. Options: `-v v0.2.0` (version), `-d ~/bin` (directory), `-f <archive>`
+writable) or `~/.local/bin`. Options: `-v v0.3.0` (version), `-d ~/bin` (directory), `-f <archive>`
 (offline). Running it again updates the CLI.
 
 **macOS package** (suitable for deployment with Jamf Pro)
 
 ```sh
-gh release download -R droidnik/epm-cli -p '*darwin_all.pkg'
+# download the .pkg from the Releases page (or: gh release download -R droidnik/epm-cli -p '*darwin_all.pkg')
 sudo installer -pkg epm-cli_*_darwin_all.pkg -target /
 ```
 
@@ -69,9 +76,9 @@ once (not needed for signed releases, see below).
 user PATH)
 
 ```powershell
-gh api repos/droidnik/epm-cli/contents/install.ps1 -H "Accept: application/vnd.github.raw" | powershell -NoProfile -Command -
+irm https://raw.githubusercontent.com/droidnik/epm-cli/main/install.ps1 | iex
 # offline, e.g. packaged as an Intune Win32 app:
-powershell -ExecutionPolicy Bypass -File install.ps1 -File .\epm-cli_0.2.0_windows_amd64.zip
+powershell -ExecutionPolicy Bypass -File install.ps1 -File .\epm-cli_0.3.0_windows_amd64.zip
 ```
 
 **Linux packages**
@@ -81,7 +88,7 @@ gh release download -R droidnik/epm-cli -p '*_amd64.deb' && sudo apt install ./e
 gh release download -R droidnik/epm-cli -p '*.x86_64.rpm' && sudo dnf install ./epm-cli-*.x86_64.rpm
 ```
 
-**Docker** (private image; log in with a token that has `read:packages`)
+**Docker**
 
 ```sh
 docker run --rm -e EPM_URL=acme -e EPM_CLIENT_ID -e EPM_CLIENT_SECRET \
@@ -93,7 +100,7 @@ CI/CD and Kubernetes examples: [4. Automation](docs/04-automation.md).
 **With Go / from source** (Go ≥ 1.26)
 
 ```sh
-GOPRIVATE=github.com/droidnik/* go install github.com/droidnik/epm-cli/cmd/epm-cli@latest
+go install github.com/droidnik/epm-cli/cmd/epm-cli@latest
 make build      # → ./bin/epm-cli
 make install    # → $(go env GOPATH)/bin/epm-cli
 ```
@@ -151,6 +158,13 @@ make spec        # re-download the spec from docs.beyondtrust.com, regenerate co
 make generate    # regenerate internal/spec/commands.json and docs/reference/
 make docs        # regenerate docs/reference/ only
 ```
+
+## License
+
+[MIT](LICENSE). Third-party components are listed in [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES). The API
+specification in `spec/` and the descriptions derived from it (`internal/spec/commands.json`,
+`docs/reference/`) originate from the [BeyondTrust EPM API reference](https://docs.beyondtrust.com/epm-wm/reference/get_v3-accepteddomains)
+and remain the property of BeyondTrust. Security reports: see [SECURITY.md](SECURITY.md).
 
 Command names, verb overrides and the list of destructive actions are defined in
 `tools/specgen/main.go`. With tenant access, the official spec can also be downloaded directly:

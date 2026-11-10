@@ -4,26 +4,26 @@
 
 ## Install
 
-The repository is private, so you need read access to `droidnik/epm-cli` and either a logged-in
-GitHub CLI (`gh auth login`) or a token in `GH_TOKEN`. No Go toolchain is required.
+Pre-built binaries come with every [release](https://github.com/droidnik/epm-cli/releases). No Go
+toolchain is required.
 
 **macOS / Linux**
 
 ```sh
-gh api repos/droidnik/epm-cli/contents/install.sh -H "Accept: application/vnd.github.raw" | sh
+curl -fsSL https://raw.githubusercontent.com/droidnik/epm-cli/main/install.sh | sh
 ```
 
 **macOS installer package** (for example to deploy with Jamf Pro)
 
 ```sh
-gh release download -R droidnik/epm-cli -p '*darwin_all.pkg'
+# download the .pkg from the Releases page, or: gh release download -R droidnik/epm-cli -p '*darwin_all.pkg'
 sudo installer -pkg epm-cli_*_darwin_all.pkg -target /
 ```
 
 **Windows** (PowerShell, no admin rights needed)
 
 ```powershell
-gh api repos/droidnik/epm-cli/contents/install.ps1 -H "Accept: application/vnd.github.raw" | powershell -NoProfile -Command -
+irm https://raw.githubusercontent.com/droidnik/epm-cli/main/install.ps1 | iex
 ```
 
 All installation options (Linux packages, Docker image, Go) are in the [README](../README.md#installation).

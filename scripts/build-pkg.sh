@@ -5,6 +5,7 @@
 #
 # Installs:
 #   /usr/local/bin/epm-cli
+#   /usr/local/share/doc/epm-cli/{LICENSE,THIRD_PARTY_NOTICES}
 #   /usr/local/share/zsh/site-functions/_epm-cli
 #   /usr/local/share/bash-completion/completions/epm-cli
 #   /usr/local/share/fish/vendor_completions.d/epm-cli.fish
@@ -38,11 +39,15 @@ ROOT="$WORK/root"
 mkdir -p "$ROOT/usr/local/bin" \
          "$ROOT/usr/local/share/zsh/site-functions" \
          "$ROOT/usr/local/share/bash-completion/completions" \
-         "$ROOT/usr/local/share/fish/vendor_completions.d"
+         "$ROOT/usr/local/share/fish/vendor_completions.d" \
+         "$ROOT/usr/local/share/doc/epm-cli"
 install -m 0755 "$BIN" "$ROOT/usr/local/bin/epm-cli"
 "$BIN" completion zsh  > "$ROOT/usr/local/share/zsh/site-functions/_epm-cli"
 "$BIN" completion bash > "$ROOT/usr/local/share/bash-completion/completions/epm-cli"
 "$BIN" completion fish > "$ROOT/usr/local/share/fish/vendor_completions.d/epm-cli.fish"
+for f in LICENSE THIRD_PARTY_NOTICES; do
+  [ -f "$f" ] && install -m 0644 "$f" "$ROOT/usr/local/share/doc/epm-cli/$f"
+done
 chmod 0644 "$ROOT"/usr/local/share/*/*/* "$ROOT"/usr/local/share/zsh/site-functions/_epm-cli
 
 mkdir -p "$OUT"

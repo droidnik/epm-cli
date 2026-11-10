@@ -1,19 +1,18 @@
 #!/bin/sh
-# epm-cli installer — downloads a release binary from the (private) GitHub repo,
-# verifies its SHA-256 checksum and installs it. No Go toolchain needed.
+# epm-cli installer — downloads a release binary from GitHub, verifies its
+# SHA-256 checksum and installs it. No Go toolchain needed.
 #
-# Authentication (the repo is private), first match wins:
-#   1. GitHub CLI `gh` that is logged in (gh auth login)
-#   2. GH_TOKEN or GITHUB_TOKEN with read access to the repo
+# No login is needed for a public repository. For a private fork, either log in
+# with the GitHub CLI (`gh auth login`) or set GH_TOKEN / GITHUB_TOKEN.
 #
 # Usage:
 #   sh install.sh                      # latest release
-#   sh install.sh -v v0.2.0            # specific version
+#   sh install.sh -v v0.3.0            # specific version
 #   sh install.sh -d ~/bin             # install directory
-#   sh install.sh -f epm-cli_0.2.0_darwin_all.tar.gz   # local archive (offline)
+#   sh install.sh -f epm-cli_0.3.0_darwin_all.tar.gz   # local archive (offline)
 #
 # Without a clone:
-#   gh api repos/droidnik/epm-cli/contents/install.sh -H "Accept: application/vnd.github.raw" | sh
+#   curl -fsSL https://raw.githubusercontent.com/droidnik/epm-cli/main/install.sh | sh
 set -eu
 
 REPO="${EPM_CLI_REPO:-droidnik/epm-cli}"
@@ -73,13 +72,14 @@ else
       || die "download failed — do you have access to $REPO and does release '$VERSION' exist?"
   else
     TOKEN="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
-    [ -n "$TOKEN" ] || die "the repository is private: log in with 'gh auth login' or set GH_TOKEN"
     command -v curl >/dev/null 2>&1 || die "curl is required"
     API="https://api.github.com/repos/$REPO/releases"
     if [ "$VERSION" = "latest" ]; then REL="$API/latest"; else REL="$API/tags/$VERSION"; fi
     say "Downloading $PATTERN ($VERSION) from $REPO via the GitHub API …"
-    curl -fsSL -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" "$REL" -o "$TMP/release.json" \
-      || die "cannot read release '$VERSION' of $REPO (token valid? repo access?)"
+    # The Authorization header is only sent when a token is set (not needed for public repos).
+    gh_curl() { if [ -n "$TOKEN" ]; then curl -fsSL -H "Authorization: Bearer $TOKEN" "$@"; else curl -fsSL "$@"; fi; }
+    gh_curl -H "Accept: application/vnd.github+json" "$REL" -o "$TMP/release.json" \
+      || die "cannot read release '$VERSION' of $REPO (does it exist? for a private repository set GH_TOKEN or run 'gh auth login')"
     # Each asset object has "url": ".../releases/assets/<id>" followed by "name": "<file>".
     assets="$(tr ',{}' '\n\n\n' < "$TMP/release.json" |
       awk -F'"' '/"url": ?".*\/releases\/assets\//{u=$4} /"name": ?"/{if(u!=""){print u" "$4; u=""}}')"
@@ -87,7 +87,7 @@ else
       url="$(printf '%s\n' "$assets" | awk -v pat="$1" '{ if ($2 ~ pat) { print $1; exit } }')"
       name="$(printf '%s\n' "$assets" | awk -v pat="$1" '{ if ($2 ~ pat) { print $2; exit } }')"
       [ -n "$url" ] || die "release has no asset matching $1"
-      curl -fsSL -H "Authorization: Bearer $TOKEN" -H "Accept: application/octet-stream" "$url" -o "$TMP/$name" \
+      gh_curl -H "Accept: application/octet-stream" "$url" -o "$TMP/$name" \
         || die "download of $name failed"
     }
     get_asset "^epm-cli_.*_${OS}_${ARCH}\\.tar\\.gz$"

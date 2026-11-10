@@ -27590,7 +27590,7 @@
         "type": "oauth2",
         "flows": {
           "clientCredentials": {
-            "tokenUrl": "https://sneakpeek-services.epm.bt3ng.com/oauth/connect/token",
+            "tokenUrl": "https://<tenant>-services.pm.beyondtrustcloud.com/oauth/connect/token",
             "scopes": {
               "urn:management:api": "Management API scope"
             }

@@ -1,7 +1,7 @@
 name: release
 
-# Push a tag like v0.2.0 to build and publish everything:
-#   git tag v0.2.0 && git push origin v0.2.0
+# Push a tag like v0.3.0 to build and publish everything:
+#   git tag v0.3.0 && git push origin v0.3.0
 #
 #   job "binaries" (macOS runner, needed for pkgbuild):
 #     GitHub release with macOS .tar.gz/.zip/.pkg, Windows .zip, Linux .tar.gz/.deb/.rpm/.apk,

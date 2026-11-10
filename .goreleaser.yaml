@@ -17,6 +17,7 @@ before:
     - go mod tidy
     - go test ./...
     - sh scripts/completions.sh
+    - sh scripts/notices.sh
 
 builds:
   - id: epm-cli
@@ -57,6 +58,8 @@ archives:
         formats: [zip]
     files:
       - README.md
+      - LICENSE
+      - THIRD_PARTY_NOTICES
       - completions/*
 
 nfpms:
@@ -64,11 +67,16 @@ nfpms:
     package_name: epm-cli
     file_name_template: "{{ .ConventionalFileName }}"
     homepage: https://github.com/droidnik/epm-cli
-    maintainer: droidnik
+    maintainer: Niklas Arhöfer
+    license: MIT
     description: Command-line interface for the BeyondTrust EPM for Windows and Mac Management API.
     formats: [deb, rpm, apk]
     bindir: /usr/bin
     contents:
+      - src: LICENSE
+        dst: /usr/share/doc/epm-cli/LICENSE
+      - src: THIRD_PARTY_NOTICES
+        dst: /usr/share/doc/epm-cli/THIRD_PARTY_NOTICES
       - src: completions/epm-cli.bash
         dst: /usr/share/bash-completion/completions/epm-cli
       - src: completions/epm-cli.zsh
@@ -93,7 +101,6 @@ changelog:
       - "^chore:"
 
 release:
-  # Private repository: the release and its assets are only visible to people with repo access.
   github:
     owner: droidnik
     name: epm-cli

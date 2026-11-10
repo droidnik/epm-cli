@@ -1,23 +1,22 @@
 <#
 .SYNOPSIS
-  Installs epm-cli on Windows from the (private) GitHub release. No admin rights needed.
+  Installs epm-cli on Windows from the GitHub release. No admin rights needed.
 
 .DESCRIPTION
   Downloads epm-cli_<version>_windows_amd64.zip, verifies its SHA-256 checksum, installs
   epm-cli.exe to %LOCALAPPDATA%\Programs\epm-cli and adds that folder to the user PATH.
 
-  Authentication (the repository is private), first match wins:
-    1. GitHub CLI "gh" that is logged in (gh auth login)
-    2. $env:GH_TOKEN or $env:GITHUB_TOKEN with read access to the repository
+  No login is needed for a public repository. For a private fork, log in with the GitHub CLI
+  (gh auth login) or set $env:GH_TOKEN / $env:GITHUB_TOKEN.
 
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File install.ps1
 .EXAMPLE
-  .\install.ps1 -Version v0.2.0 -InstallDir C:\Tools\epm-cli
+  .\install.ps1 -Version v0.3.0 -InstallDir C:\Tools\epm-cli
 .EXAMPLE
-  .\install.ps1 -File .\epm-cli_0.2.0_windows_amd64.zip   # offline / Intune package
+  .\install.ps1 -File .\epm-cli_0.3.0_windows_amd64.zip   # offline / Intune package
 .EXAMPLE
-  gh api repos/droidnik/epm-cli/contents/install.ps1 -H "Accept: application/vnd.github.raw" | powershell -NoProfile -Command -
+  irm https://raw.githubusercontent.com/droidnik/epm-cli/main/install.ps1 | iex
 #>
 [CmdletBinding()]
 param(
@@ -57,13 +56,13 @@ try {
       if ($LASTEXITCODE -ne 0) { Fail "download failed - do you have access to $Repo and does release '$Version' exist?" }
     } else {
       $token = if ($env:GH_TOKEN) { $env:GH_TOKEN } else { $env:GITHUB_TOKEN }
-      if (-not $token) { Fail "the repository is private: log in with 'gh auth login' or set `$env:GH_TOKEN" }
-      $headers = @{ Authorization = "Bearer $token"; Accept = 'application/vnd.github+json'; 'User-Agent' = 'epm-cli-installer' }
+      $headers = @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'epm-cli-installer' }
+      if ($token) { $headers.Authorization = "Bearer $token" }   # only needed for private repositories
       $api = "https://api.github.com/repos/$Repo/releases"
       $relUrl = if ($Version -eq 'latest') { "$api/latest" } else { "$api/tags/$Version" }
       Write-Host "Downloading $pattern ($Version) from $Repo via the GitHub API ..."
       try { $release = Invoke-RestMethod -Uri $relUrl -Headers $headers }
-      catch { Fail "cannot read release '$Version' of $Repo (token valid? repo access?)" }
+      catch { Fail "cannot read release '$Version' of $Repo (does it exist? for a private repository set `$env:GH_TOKEN or run 'gh auth login')" }
       foreach ($want in @($pattern, 'checksums.txt')) {
         $asset = $release.assets | Where-Object { $_.name -like $want } | Select-Object -First 1
         if (-not $asset) { Fail "release has no asset matching $want" }
